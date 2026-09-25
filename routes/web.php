@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\TableReservationController as AdminTableReservati
 use App\Http\Controllers\Admin\StatementController as AdminStatementController;
 use App\Http\Controllers\Admin\OperationalReportController as AdminOperationalReportController;
 use App\Http\Controllers\Admin\FinancialSummaryController as AdminFinancialSummaryController;
+use App\Http\Controllers\Admin\ExpenseController as AdminExpenseController;
 use App\Http\Controllers\Admin\InventoryController as AdminInventoryController;
 use App\Http\Controllers\Admin\FacilityController as AdminFacilityController;
 
@@ -309,6 +310,55 @@ Route::get(
     '/statements/cafe',
     [AdminStatementController::class, 'cafe']
 )->middleware(OwnerMiddleware::class)->name('admin.statements.cafe');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Expenses - Owner Only
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get(
+            '/expenses',
+            [AdminExpenseController::class, 'index']
+        )
+            ->middleware(OwnerMiddleware::class)
+            ->name('admin.expenses.index');
+
+        Route::get(
+            '/expenses/create',
+            [AdminExpenseController::class, 'create']
+        )
+            ->middleware(OwnerMiddleware::class)
+            ->name('admin.expenses.create');
+
+        Route::post(
+            '/expenses',
+            [AdminExpenseController::class, 'store']
+        )
+            ->middleware(OwnerMiddleware::class)
+            ->name('admin.expenses.store');
+
+        Route::get(
+            '/expenses/{expense}/edit',
+            [AdminExpenseController::class, 'edit']
+        )
+            ->middleware(OwnerMiddleware::class)
+            ->name('admin.expenses.edit');
+
+        Route::put(
+            '/expenses/{expense}',
+            [AdminExpenseController::class, 'update']
+        )
+            ->middleware(OwnerMiddleware::class)
+            ->name('admin.expenses.update');
+
+        Route::delete(
+            '/expenses/{expense}',
+            [AdminExpenseController::class, 'destroy']
+        )
+            ->middleware(OwnerMiddleware::class)
+            ->name('admin.expenses.destroy');
     });
 });
 

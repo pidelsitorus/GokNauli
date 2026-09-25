@@ -363,6 +363,20 @@
 
         <a
             href="{{ route(
+                'admin.expenses.index',
+                [],
+                false
+            ) }}"
+            class="{{ request()->routeIs(
+                'admin.expenses.*'
+            ) ? 'active' : '' }}"
+        >
+            Expenses
+        </a>
+
+
+        <a
+            href="{{ route(
                 'admin.financial-summary.index',
                 [],
                 false

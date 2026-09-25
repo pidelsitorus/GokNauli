@@ -335,6 +335,22 @@
 
                 <div class="finance-row">
                     <span>
+                        Expenses / Pengeluaran
+                    </span>
+
+                    <strong>
+                        Rp {{ number_format(
+                            $data['expense_cost'],
+                            0,
+                            ',',
+                            '.'
+                        ) }}
+                    </strong>
+                </div>
+
+
+                <div class="finance-row">
+                    <span>
                         Total Biaya Operasional
                     </span>
 
@@ -405,6 +421,23 @@
 
         <div class="finance-row">
             <span>
+                Pengeluaran Umum / Gok Nauli
+            </span>
+
+            <strong>
+                Rp {{ number_format(
+                    $summary['total']
+                        ['general_expenses'],
+                    0,
+                    ',',
+                    '.'
+                ) }}
+            </strong>
+        </div>
+
+
+        <div class="finance-row">
+            <span>
                 Total Biaya Operasional
             </span>
 
@@ -449,9 +482,9 @@
         Ringkasan ini bukan laporan laba-rugi
         lengkap. Perhitungan saat ini hanya
         mengurangi pendapatan dengan biaya
-        inventory yang digunakan/rusak/hilang
-        serta biaya fasilitas dan maintenance
-        yang sudah tercatat di sistem.
+        inventory yang digunakan/rusak/hilang,
+        biaya fasilitas/maintenance, serta
+        Expenses yang sudah tercatat di sistem.
     </div>
 
 

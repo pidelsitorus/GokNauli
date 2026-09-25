@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\Expense;
 use App\Models\FacilityHistory;
 use App\Models\InventoryMovement;
 use App\Models\Order;
@@ -155,13 +156,37 @@ class FinancialSummaryController extends Controller
             );
 
 
+        $homestayExpenseCost =
+            $this->expenseCost(
+                'homestay',
+                $month,
+                $year
+            );
+
+        $cafeExpenseCost =
+            $this->expenseCost(
+                'cafe',
+                $month,
+                $year
+            );
+
+        $generalExpenseCost =
+            $this->expenseCost(
+                'general',
+                $month,
+                $year
+            );
+
+
         $homestayOperationalCost =
             $homestayInventoryCost
-            + $homestayFacilityCost;
+            + $homestayFacilityCost
+            + $homestayExpenseCost;
 
         $cafeOperationalCost =
             $cafeInventoryCost
-            + $cafeFacilityCost;
+            + $cafeFacilityCost
+            + $cafeExpenseCost;
 
 
         $homestaySurplus =
@@ -179,7 +204,8 @@ class FinancialSummaryController extends Controller
 
         $totalOperationalCost =
             $homestayOperationalCost
-            + $cafeOperationalCost;
+            + $cafeOperationalCost
+            + $generalExpenseCost;
 
         $totalSurplus =
             $totalRevenue
@@ -196,6 +222,9 @@ class FinancialSummaryController extends Controller
 
                 'facility_cost' =>
                     $homestayFacilityCost,
+
+                'expense_cost' =>
+                    $homestayExpenseCost,
 
                 'operational_cost' =>
                     $homestayOperationalCost,
@@ -214,6 +243,9 @@ class FinancialSummaryController extends Controller
                 'facility_cost' =>
                     $cafeFacilityCost,
 
+                'expense_cost' =>
+                    $cafeExpenseCost,
+
                 'operational_cost' =>
                     $cafeOperationalCost,
 
@@ -225,6 +257,9 @@ class FinancialSummaryController extends Controller
                 'revenue' =>
                     $totalRevenue,
 
+                'general_expenses' =>
+                    $generalExpenseCost,
+
                 'operational_cost' =>
                     $totalOperationalCost,
 
@@ -232,6 +267,28 @@ class FinancialSummaryController extends Controller
                     $totalSurplus,
             ],
         ];
+    }
+
+
+    private function expenseCost(
+        string $area,
+        int $month,
+        int $year
+    ): float {
+        return (float) Expense::query()
+            ->where(
+                'area',
+                $area
+            )
+            ->whereYear(
+                'expense_date',
+                $year
+            )
+            ->whereMonth(
+                'expense_date',
+                $month
+            )
+            ->sum('amount');
     }
 
 

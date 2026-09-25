@@ -283,6 +283,69 @@
         </tr>
 
 
+        <tr>
+            <td>Expenses</td>
+
+            <td class="right">
+                Rp {{ number_format(
+                    $summary['homestay']
+                        ['expense_cost'],
+                    0,
+                    ',',
+                    '.'
+                ) }}
+            </td>
+
+            <td class="right">
+                Rp {{ number_format(
+                    $summary['cafe']
+                        ['expense_cost'],
+                    0,
+                    ',',
+                    '.'
+                ) }}
+            </td>
+
+            <td class="right">
+                Rp {{ number_format(
+                    $summary['homestay']
+                        ['expense_cost']
+                    +
+                    $summary['cafe']
+                        ['expense_cost'],
+                    0,
+                    ',',
+                    '.'
+                ) }}
+            </td>
+        </tr>
+
+
+        <tr>
+            <td>
+                Pengeluaran Umum / Gok Nauli
+            </td>
+
+            <td class="right">
+                -
+            </td>
+
+            <td class="right">
+                -
+            </td>
+
+            <td class="right">
+                Rp {{ number_format(
+                    $summary['total']
+                        ['general_expenses'],
+                    0,
+                    ',',
+                    '.'
+                ) }}
+            </td>
+        </tr>
+
+
         <tr class="total">
             <td>
                 Total Biaya Operasional
@@ -373,7 +436,9 @@
 
     Biaya operasional yang dihitung saat ini
     meliputi pemakaian/kerusakan/kehilangan
-    inventory serta biaya aktivitas facilities.
+    inventory, biaya aktivitas facilities,
+    serta Expenses yang tercatat pada periode
+    laporan.
 
 </div>
 
