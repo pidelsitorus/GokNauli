@@ -764,25 +764,7 @@
 
             </div>
 
-                        {{-- Owner Only: Homestay Revenue --}}
-            @if (auth()->user()?->isOwner())
-
-<div class="stat-card">
-                <span>Pendapatan Homestay</span>
-
-                <strong>
-                    Rp {{ number_format(
-                    $stats['homestay_revenue'],
-                    0,
-                    ',',
-                    '.'
-                ) }}
-                </strong>
-            </div>
-
-            @endif
-
-        </div>
+                                </div>
 
         <div class="notification-panel">
 
@@ -1094,25 +1076,7 @@
                 </strong>
             </div>
 
-                        {{-- Owner Only: Cafe Revenue --}}
-            @if (auth()->user()?->isOwner())
-
-<div class="stat-card">
-                <span>Pendapatan Cafe</span>
-
-                <strong>
-                    Rp {{ number_format(
-                    $stats['cafe_revenue'],
-                    0,
-                    ',',
-                    '.'
-                ) }}
-                </strong>
-            </div>
-
-            @endif
-
-        </div>
+                                </div>
 
 
         {{-- Inventory & Facilities Dashboard --}}
