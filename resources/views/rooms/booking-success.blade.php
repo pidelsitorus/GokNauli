@@ -1,343 +1,383 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+@extends('layouts.public')
 
-    <title>Booking Berhasil - Gok Nauli</title>
+@section('title', 'Booking Berhasil - Gok Nauli')
 
-    <style>
-        * {
-            box-sizing: border-box;
+@section('styles')
+<style>
+    .success-main {
+        width: 90%;
+        max-width: 760px;
+        margin: 60px auto;
+    }
+
+    .success-card {
+        background: white;
+        padding: 35px;
+        border-radius: 18px;
+        box-shadow: 0 8px 30px rgba(0,0,0,.07);
+    }
+
+    .success-icon {
+        width: 70px;
+        height: 70px;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        background: #e5f2e5;
+        color: #31563a;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 32px;
+        font-weight: bold;
+    }
+
+    .success-card h1 {
+        text-align: center;
+        color: #31563a;
+        margin: 0 0 10px;
+    }
+
+    .success-intro {
+        text-align: center;
+        color: #70776f;
+        line-height: 1.6;
+    }
+
+    .booking-code {
+        background: #eef3e9;
+        text-align: center;
+        padding: 20px;
+        border-radius: 12px;
+        font-size: 25px;
+        font-weight: bold;
+        margin: 28px 0;
+        color: #31563a;
+    }
+
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 13px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .detail-row span {
+        color: #70776f;
+    }
+
+    .status {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        background: #fff4d6;
+        color: #856311;
+        font-size: 12px;
+    }
+
+    .payment {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        background: #fdebea;
+        color: #98372f;
+        font-size: 12px;
+    }
+
+    .total {
+        font-size: 20px;
+        color: #31563a;
+    }
+
+    .actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 30px;
+    }
+
+    .action-button {
+        text-align: center;
+        padding: 13px;
+        border-radius: 8px;
+        font-weight: bold;
+    }
+
+    .home-button {
+        background: #eef3e9;
+        color: #31563a;
+    }
+
+    .rooms-button {
+        background: #31563a;
+        color: white;
+    }
+
+    .whatsapp-button {
+        display: block;
+        margin-top: 12px;
+        text-align: center;
+        padding: 13px;
+        border-radius: 8px;
+        background: #31563a;
+        color: white;
+        font-weight: bold;
+    }
+
+    @media (max-width: 550px) {
+        .success-card {
+            padding: 25px;
         }
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f7f5ef;
-            color: #2f352d;
-        }
-
-        header {
-            background: #26372a;
-            color: white;
-            padding: 20px 8%;
-        }
-
-        header a {
-            color: white;
-            text-decoration: none;
-        }
-
-        .container {
-            width: 90%;
-            max-width: 720px;
-            margin: 50px auto;
-        }
-
-        .card {
-            background: white;
-            padding: 35px;
-            border-radius: 18px;
-            box-shadow: 0 8px 30px rgba(0,0,0,.08);
-        }
-
-        .success-icon {
-            width: 70px;
-            height: 70px;
-            margin: 0 auto 20px;
-            border-radius: 50%;
-            background: #e6f3e8;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 34px;
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 8px;
-            color: #355b3e;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #687064;
-            margin-bottom: 30px;
-        }
-
-        .booking-code {
-            background: #f2f5ef;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .booking-code small {
-            display: block;
-            color: #687064;
-            margin-bottom: 6px;
-        }
-
-        .booking-code strong {
-            font-size: 26px;
-            color: #26372a;
-        }
-
-        .section {
-            margin-top: 25px;
-        }
-
-        .section h2 {
-            font-size: 18px;
-            margin-bottom: 15px;
-        }
-
-        .row {
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-            padding: 11px 0;
-            border-bottom: 1px solid #eee;
-        }
-
-        .row span:first-child {
-            color: #687064;
-        }
-
-        .total {
-            font-size: 21px;
-            font-weight: bold;
-            color: #355b3e;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 20px;
-            background: #fff3cd;
-            color: #795d00;
-            font-size: 13px;
+        .detail-row {
+            flex-direction: column;
+            gap: 5px;
         }
 
         .actions {
-            display: grid;
-            gap: 12px;
-            margin-top: 30px;
+            grid-template-columns: 1fr;
         }
+    }
+</style>
+@endsection
 
-        .button {
-            display: block;
-            text-align: center;
-            text-decoration: none;
-            padding: 14px 20px;
-            border-radius: 9px;
-            font-weight: bold;
-        }
 
-        .whatsapp {
-            background: #26753a;
-            color: white;
-        }
+@section('content')
 
-        .secondary {
-            background: #eef1ec;
-            color: #26372a;
-        }
+<main class="success-main">
 
-        .notice {
-            margin-top: 20px;
-            padding: 15px;
-            background: #fff8e5;
-            border-radius: 9px;
-            color: #725c1d;
-        }
-
-        @media (max-width: 600px) {
-            .row {
-                flex-direction: column;
-                gap: 5px;
-            }
-
-            .card {
-                padding: 25px 20px;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-<header>
-    Gok Nauli Homestay Cafe & Resto
-</header>
-
-@php
-    $nights = $booking->check_in->diffInDays($booking->check_out);
-
-    $whatsappNumber = config('goknauli.whatsapp_number');
-
-    $whatsappMessage = rawurlencode(
-        "Halo Gok Nauli, saya ingin mengonfirmasi booking homestay.\n\n" .
-        "Kode Booking: {$booking->booking_code}\n" .
-        "Nama: {$booking->guest_name}\n" .
-        "Kamar: {$booking->room->name}\n" .
-        "Check-in: {$booking->check_in->format('d/m/Y')}\n" .
-        "Check-out: {$booking->check_out->format('d/m/Y')}\n" .
-        "Durasi: {$nights} malam\n" .
-        "Total: Rp " . number_format($booking->total_price, 0, ',', '.') . "\n\n" .
-        "Mohon konfirmasi ketersediaan dan proses pembayaran. Terima kasih."
-    );
-@endphp
-
-<div class="container">
-
-    <div class="card">
+    <div class="success-card">
 
         <div class="success-icon">
             ✓
         </div>
 
-        <h1>Booking Berhasil Dibuat</h1>
+        <h1>
+            Booking Berhasil Dibuat
+        </h1>
 
-        <p class="subtitle">
-            Simpan kode booking Anda untuk proses konfirmasi.
+        <p class="success-intro">
+            Booking Anda sudah masuk dan sedang
+            menunggu konfirmasi dari Gok Nauli.
         </p>
 
+
         <div class="booking-code">
-            <small>Kode Booking</small>
-            <strong>{{ $booking->booking_code }}</strong>
+            {{ $booking->booking_code }}
         </div>
 
-        <div class="section">
 
-            <h2>Detail Tamu</h2>
+        <div class="detail-row">
 
-            <div class="row">
-                <span>Nama</span>
-                <strong>{{ $booking->guest_name }}</strong>
-            </div>
+            <span>
+                Nama Tamu
+            </span>
 
-            <div class="row">
-                <span>WhatsApp / Telepon</span>
-                <strong>{{ $booking->guest_phone }}</strong>
-            </div>
-
-            @if ($booking->guest_email)
-                <div class="row">
-                    <span>Email</span>
-                    <strong>{{ $booking->guest_email }}</strong>
-                </div>
-            @endif
+            <strong>
+                {{ $booking->guest_name }}
+            </strong>
 
         </div>
 
-        <div class="section">
 
-            <h2>Detail Menginap</h2>
+        <div class="detail-row">
 
-            <div class="row">
-                <span>Kamar</span>
-                <strong>{{ $booking->room->name }}</strong>
-            </div>
+            <span>
+                Kamar
+            </span>
 
-            <div class="row">
-                <span>Tipe</span>
-                <strong>{{ $booking->room->roomType->name }}</strong>
-            </div>
+            <strong>
+                {{ $booking->room?->name }}
+                ({{ $booking->room?->room_number }})
+            </strong>
 
-            <div class="row">
-                <span>Check-in</span>
-                <strong>{{ $booking->check_in->format('d M Y') }}</strong>
-            </div>
+        </div>
 
-            <div class="row">
-                <span>Check-out</span>
-                <strong>{{ $booking->check_out->format('d M Y') }}</strong>
-            </div>
 
-            <div class="row">
-                <span>Durasi</span>
-                <strong>{{ $nights }} malam</strong>
-            </div>
+        <div class="detail-row">
 
-            <div class="row">
-                <span>Tamu</span>
+            <span>
+                Tipe Kamar
+            </span>
+
+            <strong>
+                {{ $booking->room?->roomType?->name ?? '-' }}
+            </strong>
+
+        </div>
+
+
+        <div class="detail-row">
+
+            <span>
+                Check In
+            </span>
+
+            <strong>
+                {{ $booking->check_in->format('d M Y') }}
+            </strong>
+
+        </div>
+
+
+        <div class="detail-row">
+
+            <span>
+                Check Out
+            </span>
+
+            <strong>
+                {{ $booking->check_out->format('d M Y') }}
+            </strong>
+
+        </div>
+
+
+        <div class="detail-row">
+
+            <span>
+                Durasi
+            </span>
+
+            <strong>
+                {{ $booking->check_in
+                    ->diffInDays($booking->check_out) }}
+                malam
+            </strong>
+
+        </div>
+
+
+        <div class="detail-row">
+
+            <span>
+                Tamu
+            </span>
+
+            <strong>
+                {{ $booking->adults }} dewasa
+
+                @if ($booking->children > 0)
+
+                    ,
+                    {{ $booking->children }} anak
+
+                @endif
+            </strong>
+
+        </div>
+
+
+        <div class="detail-row">
+
+            <span>
+                Status Booking
+            </span>
+
+            <strong class="status">
+                {{ ucfirst($booking->status) }}
+            </strong>
+
+        </div>
+
+
+        <div class="detail-row">
+
+            <span>
+                Pembayaran
+            </span>
+
+            <strong class="payment">
+                {{ ucfirst($booking->payment_status) }}
+            </strong>
+
+        </div>
+
+
+        <div class="detail-row total">
+
+            <strong>
+                Total
+            </strong>
+
+            <strong>
+
+                Rp {{ number_format(
+                    $booking->total_price,
+                    0,
+                    ',',
+                    '.'
+                ) }}
+
+            </strong>
+
+        </div>
+
+
+        @if ($booking->notes)
+
+            <div class="detail-row">
+
+                <span>
+                    Catatan
+                </span>
 
                 <strong>
-                    {{ $booking->adults }} dewasa
-                    @if ($booking->children > 0)
-                        + {{ $booking->children }} anak
-                    @endif
+                    {{ $booking->notes }}
                 </strong>
+
             </div>
 
-        </div>
+        @endif
 
-        <div class="section">
-
-            <h2>Pembayaran</h2>
-
-            <div class="row">
-                <span>Total</span>
-
-                <span class="total">
-                    Rp {{ number_format($booking->total_price, 0, ',', '.') }}
-                </span>
-            </div>
-
-            <div class="row">
-                <span>Status Booking</span>
-
-                <span class="badge">
-                    {{ ucfirst(str_replace('_', ' ', $booking->status)) }}
-                </span>
-            </div>
-
-            <div class="row">
-                <span>Status Pembayaran</span>
-
-                <span class="badge">
-                    {{ ucfirst(str_replace('_', ' ', $booking->payment_status)) }}
-                </span>
-            </div>
-
-        </div>
 
         <div class="actions">
 
-            @if ($whatsappNumber)
-
-                <a
-                    class="button whatsapp"
-                    href="https://wa.me/{{ $whatsappNumber }}?text={{ $whatsappMessage }}"
-                    target="_blank"
-                    rel="noopener"
-                >
-                    Konfirmasi via WhatsApp
-                </a>
-
-            @else
-
-                <div class="notice">
-                    Nomor WhatsApp Gok Nauli belum dikonfigurasi.
-                </div>
-
-            @endif
+            <a
+                class="action-button home-button"
+                href="{{ route('home', [], false) }}"
+            >
+                Kembali ke Home
+            </a>
 
             <a
-                class="button secondary"
+                class="action-button rooms-button"
                 href="{{ route('rooms.index', [], false) }}"
             >
-                Kembali ke Homestay
+                Lihat Kamar
             </a>
 
         </div>
 
+
+        @php
+            $whatsappNumber =
+                config('goknauli.whatsapp_number');
+
+            $whatsappMessage =
+                'Halo Gok Nauli, saya ingin mengonfirmasi booking '
+                . $booking->booking_code
+                . ' atas nama '
+                . $booking->guest_name
+                . '.';
+        @endphp
+
+
+        @if ($whatsappNumber)
+
+            <a
+                class="whatsapp-button"
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://wa.me/{{ $whatsappNumber }}?text={{ rawurlencode($whatsappMessage) }}"
+            >
+                Konfirmasi melalui WhatsApp
+            </a>
+
+        @endif
+
     </div>
 
-</div>
+</main>
 
-</body>
-</html>
+@endsection
