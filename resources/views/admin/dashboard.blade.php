@@ -743,6 +743,587 @@
 
         </div>
 
+
+        {{-- Financial Trend Chart --}}
+        <div
+            class="operation-panel"
+            style="
+                margin-top: 18px;
+                overflow: hidden;
+            "
+        >
+
+            <div class="operation-panel-header">
+
+                <h3>
+                    Tren Keuangan 6 Bulan
+                </h3>
+
+            </div>
+
+
+            <div style="padding: 20px;">
+
+                @php
+
+                    $trend =
+                        $financialOverview['trend'];
+
+                    $allTrendValues = [];
+
+                    foreach ($trend as $row) {
+                        $allTrendValues[] =
+                            $row['revenue'];
+
+                        $allTrendValues[] =
+                            $row['operational_cost'];
+
+                        $allTrendValues[] =
+                            $row['surplus'];
+                    }
+
+
+                    $minValue = min(
+                        0,
+                        min($allTrendValues)
+                    );
+
+                    $maxValue = max(
+                        0,
+                        max($allTrendValues)
+                    );
+
+
+                    if ($minValue == $maxValue) {
+                        $maxValue =
+                            $minValue + 1;
+                    }
+
+
+                    $chartWidth = 900;
+                    $chartHeight = 320;
+
+                    $left = 85;
+                    $right = 25;
+                    $top = 30;
+                    $bottom = 55;
+
+                    $plotWidth =
+                        $chartWidth
+                        - $left
+                        - $right;
+
+                    $plotHeight =
+                        $chartHeight
+                        - $top
+                        - $bottom;
+
+
+                    $range =
+                        $maxValue
+                        - $minValue;
+
+
+                    $count =
+                        count($trend);
+
+                    $xDivider =
+                        max(
+                            1,
+                            $count - 1
+                        );
+
+
+                    $point = function (
+                        $value,
+                        $index
+                    ) use (
+                        $left,
+                        $top,
+                        $plotWidth,
+                        $plotHeight,
+                        $xDivider,
+                        $maxValue,
+                        $range
+                    ) {
+
+                        $x =
+                            $left
+                            +
+                            (
+                                $index
+                                / $xDivider
+                            )
+                            * $plotWidth;
+
+                        $y =
+                            $top
+                            +
+                            (
+                                (
+                                    $maxValue
+                                    - $value
+                                )
+                                / $range
+                            )
+                            * $plotHeight;
+
+                        return [
+                            round($x, 2),
+                            round($y, 2),
+                        ];
+                    };
+
+
+                    $revenuePoints = [];
+                    $costPoints = [];
+                    $surplusPoints = [];
+
+                    foreach (
+                        $trend as $index => $row
+                    ) {
+
+                        [$x, $y] =
+                            $point(
+                                $row['revenue'],
+                                $index
+                            );
+
+                        $revenuePoints[] =
+                            $x . ',' . $y;
+
+
+                        [$x, $y] =
+                            $point(
+                                $row[
+                                    'operational_cost'
+                                ],
+                                $index
+                            );
+
+                        $costPoints[] =
+                            $x . ',' . $y;
+
+
+                        [$x, $y] =
+                            $point(
+                                $row['surplus'],
+                                $index
+                            );
+
+                        $surplusPoints[] =
+                            $x . ',' . $y;
+                    }
+
+
+                    $zeroY =
+                        $top
+                        +
+                        (
+                            (
+                                $maxValue - 0
+                            )
+                            / $range
+                        )
+                        * $plotHeight;
+
+
+                    $shortMoney =
+                        function ($value) {
+
+                            if (
+                                abs($value)
+                                >= 1000000000
+                            ) {
+                                return 'Rp '
+                                    . number_format(
+                                        $value
+                                            / 1000000000,
+                                        1,
+                                        ',',
+                                        '.'
+                                    )
+                                    . ' M';
+                            }
+
+                            if (
+                                abs($value)
+                                >= 1000000
+                            ) {
+                                return 'Rp '
+                                    . number_format(
+                                        $value
+                                            / 1000000,
+                                        1,
+                                        ',',
+                                        '.'
+                                    )
+                                    . ' jt';
+                            }
+
+                            if (
+                                abs($value)
+                                >= 1000
+                            ) {
+                                return 'Rp '
+                                    . number_format(
+                                        $value
+                                            / 1000,
+                                        0,
+                                        ',',
+                                        '.'
+                                    )
+                                    . ' rb';
+                            }
+
+                            return 'Rp '
+                                . number_format(
+                                    $value,
+                                    0,
+                                    ',',
+                                    '.'
+                                );
+                        };
+
+                @endphp
+
+
+                <div
+                    style="
+                        display: flex;
+                        gap: 20px;
+                        flex-wrap: wrap;
+                        margin-bottom: 15px;
+                        font-size: 13px;
+                    "
+                >
+
+                    <span>
+                        <b style="color: #2563eb;">
+                            ━
+                        </b>
+                        Pendapatan
+                    </span>
+
+                    <span>
+                        <b style="color: #dc2626;">
+                            ━
+                        </b>
+                        Biaya Operasional
+                    </span>
+
+                    <span>
+                        <b style="color: #16a34a;">
+                            ━
+                        </b>
+                        Surplus
+                    </span>
+
+                </div>
+
+
+                <div
+                    style="
+                        overflow-x: auto;
+                        width: 100%;
+                    "
+                >
+
+                    <svg
+                        viewBox="0 0 900 320"
+                        style="
+                            width: 100%;
+                            min-width: 700px;
+                            height: auto;
+                            display: block;
+                        "
+                        role="img"
+                        aria-label="
+                            Grafik tren keuangan
+                            enam bulan terakhir
+                        "
+                    >
+
+                        {{-- Horizontal grid --}}
+                        <line
+                            x1="{{ $left }}"
+                            y1="{{ $top }}"
+                            x2="{{
+                                $chartWidth
+                                - $right
+                            }}"
+                            y2="{{ $top }}"
+                            stroke="#e5e7eb"
+                            stroke-width="1"
+                        />
+
+                        <line
+                            x1="{{ $left }}"
+                            y1="{{
+                                $top
+                                + ($plotHeight / 2)
+                            }}"
+                            x2="{{
+                                $chartWidth
+                                - $right
+                            }}"
+                            y2="{{
+                                $top
+                                + ($plotHeight / 2)
+                            }}"
+                            stroke="#e5e7eb"
+                            stroke-width="1"
+                        />
+
+                        <line
+                            x1="{{ $left }}"
+                            y1="{{
+                                $top
+                                + $plotHeight
+                            }}"
+                            x2="{{
+                                $chartWidth
+                                - $right
+                            }}"
+                            y2="{{
+                                $top
+                                + $plotHeight
+                            }}"
+                            stroke="#e5e7eb"
+                            stroke-width="1"
+                        />
+
+
+                        {{-- Zero baseline --}}
+                        <line
+                            x1="{{ $left }}"
+                            y1="{{ $zeroY }}"
+                            x2="{{
+                                $chartWidth
+                                - $right
+                            }}"
+                            y2="{{ $zeroY }}"
+                            stroke="#9ca3af"
+                            stroke-width="1"
+                            stroke-dasharray="5 5"
+                        />
+
+
+                        {{-- Y-axis labels --}}
+                        <text
+                            x="5"
+                            y="{{ $top + 5 }}"
+                            font-size="11"
+                            fill="#6b7280"
+                        >
+                            {{ $shortMoney(
+                                $maxValue
+                            ) }}
+                        </text>
+
+                        <text
+                            x="5"
+                            y="{{
+                                $top
+                                + $plotHeight
+                            }}"
+                            font-size="11"
+                            fill="#6b7280"
+                        >
+                            {{ $shortMoney(
+                                $minValue
+                            ) }}
+                        </text>
+
+
+                        {{-- Revenue line --}}
+                        <polyline
+                            points="{{
+                                implode(
+                                    ' ',
+                                    $revenuePoints
+                                )
+                            }}"
+                            fill="none"
+                            stroke="#2563eb"
+                            stroke-width="3"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                        />
+
+
+                        {{-- Operational cost line --}}
+                        <polyline
+                            points="{{
+                                implode(
+                                    ' ',
+                                    $costPoints
+                                )
+                            }}"
+                            fill="none"
+                            stroke="#dc2626"
+                            stroke-width="3"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                        />
+
+
+                        {{-- Surplus line --}}
+                        <polyline
+                            points="{{
+                                implode(
+                                    ' ',
+                                    $surplusPoints
+                                )
+                            }}"
+                            fill="none"
+                            stroke="#16a34a"
+                            stroke-width="3"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                        />
+
+
+                        @foreach (
+                            $trend as $index => $row
+                        )
+
+                            @php
+
+                                [$revenueX, $revenueY] =
+                                    $point(
+                                        $row['revenue'],
+                                        $index
+                                    );
+
+                                [$costX, $costY] =
+                                    $point(
+                                        $row[
+                                            'operational_cost'
+                                        ],
+                                        $index
+                                    );
+
+                                [$surplusX, $surplusY] =
+                                    $point(
+                                        $row['surplus'],
+                                        $index
+                                    );
+
+                            @endphp
+
+
+                            {{-- Revenue point --}}
+                            <circle
+                                cx="{{ $revenueX }}"
+                                cy="{{ $revenueY }}"
+                                r="5"
+                                fill="#2563eb"
+                            >
+                                <title>
+                                    {{
+                                        $row['period']
+                                    }}
+                                    — Pendapatan:
+                                    Rp {{
+                                        number_format(
+                                            $row['revenue'],
+                                            0,
+                                            ',',
+                                            '.'
+                                        )
+                                    }}
+                                </title>
+                            </circle>
+
+
+                            {{-- Cost point --}}
+                            <circle
+                                cx="{{ $costX }}"
+                                cy="{{ $costY }}"
+                                r="5"
+                                fill="#dc2626"
+                            >
+                                <title>
+                                    {{
+                                        $row['period']
+                                    }}
+                                    — Biaya:
+                                    Rp {{
+                                        number_format(
+                                            $row[
+                                                'operational_cost'
+                                            ],
+                                            0,
+                                            ',',
+                                            '.'
+                                        )
+                                    }}
+                                </title>
+                            </circle>
+
+
+                            {{-- Surplus point --}}
+                            <circle
+                                cx="{{ $surplusX }}"
+                                cy="{{ $surplusY }}"
+                                r="5"
+                                fill="#16a34a"
+                            >
+                                <title>
+                                    {{
+                                        $row['period']
+                                    }}
+                                    — Surplus:
+                                    Rp {{
+                                        number_format(
+                                            $row['surplus'],
+                                            0,
+                                            ',',
+                                            '.'
+                                        )
+                                    }}
+                                </title>
+                            </circle>
+
+
+                            {{-- Month label --}}
+                            <text
+                                x="{{ $revenueX }}"
+                                y="{{
+                                    $chartHeight - 18
+                                }}"
+                                text-anchor="middle"
+                                font-size="12"
+                                fill="#6b7280"
+                            >
+                                {{ $row['label'] }}
+                            </text>
+
+                        @endforeach
+
+                    </svg>
+
+                </div>
+
+
+                <p
+                    style="
+                        margin-bottom: 0;
+                        font-size: 12px;
+                        color: #6b7280;
+                    "
+                >
+                    Arahkan pointer ke titik grafik
+                    untuk melihat nilai bulan tersebut.
+                </p>
+
+            </div>
+
+        </div>
+        {{-- End Financial Trend Chart --}}
+
+
         @endif
         {{-- End Owner Financial Overview Dashboard --}}
 

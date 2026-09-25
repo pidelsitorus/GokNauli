@@ -390,6 +390,149 @@ class DashboardController extends Controller
                 );
 
 
+            /*
+             * Financial Trend - 6 bulan terakhir.
+             */
+            $financialTrend = [];
+
+            for ($i = 5; $i >= 0; $i--) {
+
+                $trendStart =
+                    now()->copy()
+                        ->subMonthsNoOverflow($i)
+                        ->startOfMonth();
+
+                $trendEnd =
+                    now()->copy()
+                        ->subMonthsNoOverflow($i)
+                        ->endOfMonth();
+
+
+                /*
+                 * Revenue.
+                 */
+                $trendRevenue =
+                    (float) Booking::query()
+                        ->where(
+                            'payment_status',
+                            'paid'
+                        )
+                        ->whereBetween(
+                            'paid_at',
+                            [
+                                $trendStart,
+                                $trendEnd,
+                            ]
+                        )
+                        ->sum('total_price')
+                    +
+                    (float) Order::query()
+                        ->where(
+                            'payment_status',
+                            'paid'
+                        )
+                        ->whereBetween(
+                            'paid_at',
+                            [
+                                $trendStart,
+                                $trendEnd,
+                            ]
+                        )
+                        ->sum('subtotal');
+
+
+                /*
+                 * Inventory.
+                 */
+                $trendInventoryCost =
+                    (float) InventoryMovement::query()
+                        ->whereIn(
+                            'movement_type',
+                            [
+                                'USED',
+                                'DAMAGED',
+                                'LOST',
+                                'ADJUSTMENT_OUT',
+                            ]
+                        )
+                        ->whereBetween(
+                            'occurred_at',
+                            [
+                                $trendStart,
+                                $trendEnd,
+                            ]
+                        )
+                        ->sum('total_cost');
+
+
+                /*
+                 * Facilities.
+                 */
+                $trendFacilityCost =
+                    (float) FacilityHistory::query()
+                        ->whereBetween(
+                            'occurred_at',
+                            [
+                                $trendStart,
+                                $trendEnd,
+                            ]
+                        )
+                        ->sum('cost');
+
+
+                /*
+                 * Expenses.
+                 */
+                $trendExpenseCost =
+                    (float) Expense::query()
+                        ->whereBetween(
+                            'expense_date',
+                            [
+                                $trendStart
+                                    ->toDateString(),
+
+                                $trendEnd
+                                    ->toDateString(),
+                            ]
+                        )
+                        ->sum('amount');
+
+
+                $trendOperationalCost =
+                    $trendInventoryCost
+                    + $trendFacilityCost
+                    + $trendExpenseCost;
+
+
+                $trendSurplus =
+                    $trendRevenue
+                    - $trendOperationalCost;
+
+
+                $financialTrend[] = [
+
+                    'label' =>
+                        $trendStart
+                            ->locale('id')
+                            ->translatedFormat('M y'),
+
+                    'period' =>
+                        $trendStart
+                            ->locale('id')
+                            ->translatedFormat('F Y'),
+
+                    'revenue' =>
+                        $trendRevenue,
+
+                    'operational_cost' =>
+                        $trendOperationalCost,
+
+                    'surplus' =>
+                        $trendSurplus,
+                ];
+            }
+
+
             $financialOverview = [
                 'period' =>
                     $currentStart
@@ -454,6 +597,9 @@ class DashboardController extends Controller
 
                 'top_expenses' =>
                     $topExpenses,
+
+                'trend' =>
+                    $financialTrend,
             ];
 
 
