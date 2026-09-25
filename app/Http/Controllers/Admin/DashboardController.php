@@ -142,6 +142,7 @@ class DashboardController extends Controller
                 [
                     'completed',
                     'cancelled',
+                    'expired',
                 ]
             )
             ->orderBy('reservation_time')

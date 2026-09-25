@@ -200,6 +200,7 @@
                         'seated' => 'Seated',
                         'completed' => 'Completed',
                         'cancelled' => 'Cancelled',
+                        'expired' => 'Expired',
                     ] as $value => $label)
 
                         <option
@@ -320,6 +321,7 @@
                                     'seated' => 'Seated',
                                     'completed' => 'Completed',
                                     'cancelled' => 'Cancelled',
+                        'expired' => 'Expired',
                                 ] as $value => $label)
 
                                     <option

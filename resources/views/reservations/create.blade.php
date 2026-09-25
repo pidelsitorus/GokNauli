@@ -304,7 +304,7 @@
                         type="date"
                         name="reservation_date"
                         value="{{ old('reservation_date') }}"
-                        min="{{ date('Y-m-d') }}"
+                        min="{{ today()->toDateString() }}"
                         required
                     >
 
@@ -411,3 +411,51 @@
 </section>
 
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const dateInput =
+        document.getElementById('reservation_date');
+
+    const timeInput =
+        document.getElementById('reservation_time');
+
+    if (!dateInput || !timeInput) {
+        return;
+    }
+
+    const today =
+        @json(today()->toDateString());
+
+    const currentTime =
+        @json(now()->format('H:i'));
+
+
+    function updateMinimumTime() {
+        if (dateInput.value === today) {
+            timeInput.min = currentTime;
+
+            if (
+                timeInput.value
+                && timeInput.value <= currentTime
+            ) {
+                timeInput.value = '';
+            }
+
+            return;
+        }
+
+        timeInput.removeAttribute('min');
+    }
+
+
+    dateInput.addEventListener(
+        'change',
+        updateMinimumTime
+    );
+
+    updateMinimumTime();
+});
+</script>
+@endpush

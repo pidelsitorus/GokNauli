@@ -53,6 +53,7 @@ class TableReservationController extends Controller
                     'seated',
                     'completed',
                     'cancelled',
+                    'expired',
                 ]),
             ],
         ]);
