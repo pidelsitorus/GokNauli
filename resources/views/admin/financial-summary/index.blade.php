@@ -171,7 +171,47 @@
                 grid-template-columns: 1fr;
             }
         }
-    </style>
+    
+        .expense-breakdown {
+            margin-top: 22px;
+        }
+
+        .expense-breakdown h2 {
+            margin-top: 0;
+        }
+
+        .expense-table-wrapper {
+            overflow-x: auto;
+        }
+
+        .expense-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .expense-table th,
+        .expense-table td {
+            padding: 11px;
+            border-bottom: 1px solid #e5e8e3;
+            text-align: right;
+        }
+
+        .expense-table th:first-child,
+        .expense-table td:first-child {
+            text-align: left;
+        }
+
+        .expense-table th {
+            background: #edf2e9;
+        }
+
+        .expense-table .total-row {
+            font-weight: bold;
+            background: #f3f6f1;
+        }
+
+</style>
 </head>
 
 <body>
@@ -471,6 +511,176 @@
                     '.'
                 ) }}
             </strong>
+        </div>
+
+    </section>
+
+
+    <section class="card expense-breakdown">
+
+        <h2>
+            Breakdown Expenses
+        </h2>
+
+        <p>
+            Pengeluaran berdasarkan kategori
+            pada {{ $periodLabel }}.
+        </p>
+
+
+        <div class="expense-table-wrapper">
+
+            <table class="expense-table">
+
+                <thead>
+                    <tr>
+                        <th>Kategori</th>
+                        <th>Homestay</th>
+                        <th>Cafe & Resto</th>
+                        <th>Umum</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @forelse (
+                        $summary['expense_breakdown']
+                        as $expenseRow
+                    )
+
+                        <tr>
+
+                            <td>
+                                <strong>
+                                    {{ $expenseRow['label'] }}
+                                </strong>
+                            </td>
+
+                            <td>
+                                Rp {{ number_format(
+                                    $expenseRow['homestay'],
+                                    0,
+                                    ',',
+                                    '.'
+                                ) }}
+                            </td>
+
+                            <td>
+                                Rp {{ number_format(
+                                    $expenseRow['cafe'],
+                                    0,
+                                    ',',
+                                    '.'
+                                ) }}
+                            </td>
+
+                            <td>
+                                Rp {{ number_format(
+                                    $expenseRow['general'],
+                                    0,
+                                    ',',
+                                    '.'
+                                ) }}
+                            </td>
+
+                            <td>
+                                <strong>
+                                    Rp {{ number_format(
+                                        $expenseRow['total'],
+                                        0,
+                                        ',',
+                                        '.'
+                                    ) }}
+                                </strong>
+                            </td>
+
+                        </tr>
+
+                    @empty
+
+                        <tr>
+                            <td
+                                colspan="5"
+                                style="
+                                    text-align: center;
+                                    color: #777;
+                                "
+                            >
+                                Belum ada Expenses
+                                pada periode ini.
+                            </td>
+                        </tr>
+
+                    @endforelse
+
+
+                    @if (
+                        count(
+                            $summary['expense_breakdown']
+                        ) > 0
+                    )
+
+                        <tr class="total-row">
+
+                            <td>
+                                TOTAL EXPENSES
+                            </td>
+
+                            <td>
+                                Rp {{ number_format(
+                                    $summary['homestay']
+                                        ['expense_cost'],
+                                    0,
+                                    ',',
+                                    '.'
+                                ) }}
+                            </td>
+
+                            <td>
+                                Rp {{ number_format(
+                                    $summary['cafe']
+                                        ['expense_cost'],
+                                    0,
+                                    ',',
+                                    '.'
+                                ) }}
+                            </td>
+
+                            <td>
+                                Rp {{ number_format(
+                                    $summary['total']
+                                        ['general_expenses'],
+                                    0,
+                                    ',',
+                                    '.'
+                                ) }}
+                            </td>
+
+                            <td>
+                                Rp {{ number_format(
+                                    $summary['homestay']
+                                        ['expense_cost']
+                                    +
+                                    $summary['cafe']
+                                        ['expense_cost']
+                                    +
+                                    $summary['total']
+                                        ['general_expenses'],
+                                    0,
+                                    ',',
+                                    '.'
+                                ) }}
+                            </td>
+
+                        </tr>
+
+                    @endif
+
+                </tbody>
+
+            </table>
+
         </div>
 
     </section>

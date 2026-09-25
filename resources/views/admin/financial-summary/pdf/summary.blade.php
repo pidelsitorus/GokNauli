@@ -424,6 +424,162 @@
 </table>
 
 
+<h2>
+    BREAKDOWN EXPENSES
+</h2>
+
+<table>
+
+    <thead>
+        <tr>
+            <th>Kategori</th>
+            <th class="right">
+                Homestay
+            </th>
+            <th class="right">
+                Cafe & Resto
+            </th>
+            <th class="right">
+                Umum
+            </th>
+            <th class="right">
+                Total
+            </th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @forelse (
+            $summary['expense_breakdown']
+            as $expenseRow
+        )
+
+            <tr>
+
+                <td>
+                    {{ $expenseRow['label'] }}
+                </td>
+
+                <td class="right">
+                    Rp {{ number_format(
+                        $expenseRow['homestay'],
+                        0,
+                        ',',
+                        '.'
+                    ) }}
+                </td>
+
+                <td class="right">
+                    Rp {{ number_format(
+                        $expenseRow['cafe'],
+                        0,
+                        ',',
+                        '.'
+                    ) }}
+                </td>
+
+                <td class="right">
+                    Rp {{ number_format(
+                        $expenseRow['general'],
+                        0,
+                        ',',
+                        '.'
+                    ) }}
+                </td>
+
+                <td class="right">
+                    <strong>
+                        Rp {{ number_format(
+                            $expenseRow['total'],
+                            0,
+                            ',',
+                            '.'
+                        ) }}
+                    </strong>
+                </td>
+
+            </tr>
+
+        @empty
+
+            <tr>
+                <td colspan="5">
+                    Belum ada Expenses
+                    pada periode ini.
+                </td>
+            </tr>
+
+        @endforelse
+
+
+        @if (
+            count(
+                $summary['expense_breakdown']
+            ) > 0
+        )
+
+            <tr class="total">
+
+                <td>
+                    TOTAL EXPENSES
+                </td>
+
+                <td class="right">
+                    Rp {{ number_format(
+                        $summary['homestay']
+                            ['expense_cost'],
+                        0,
+                        ',',
+                        '.'
+                    ) }}
+                </td>
+
+                <td class="right">
+                    Rp {{ number_format(
+                        $summary['cafe']
+                            ['expense_cost'],
+                        0,
+                        ',',
+                        '.'
+                    ) }}
+                </td>
+
+                <td class="right">
+                    Rp {{ number_format(
+                        $summary['total']
+                            ['general_expenses'],
+                        0,
+                        ',',
+                        '.'
+                    ) }}
+                </td>
+
+                <td class="right">
+                    Rp {{ number_format(
+                        $summary['homestay']
+                            ['expense_cost']
+                        +
+                        $summary['cafe']
+                            ['expense_cost']
+                        +
+                        $summary['total']
+                            ['general_expenses'],
+                        0,
+                        ',',
+                        '.'
+                    ) }}
+                </td>
+
+            </tr>
+
+        @endif
+
+    </tbody>
+
+</table>
+
+
 <div class="note">
 
     <strong>Catatan:</strong>

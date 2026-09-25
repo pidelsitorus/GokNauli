@@ -178,6 +178,13 @@ class FinancialSummaryController extends Controller
             );
 
 
+        $expenseBreakdown =
+            $this->expenseBreakdown(
+                $month,
+                $year
+            );
+
+
         $homestayOperationalCost =
             $homestayInventoryCost
             + $homestayFacilityCost
@@ -253,6 +260,9 @@ class FinancialSummaryController extends Controller
                     $cafeSurplus,
             ],
 
+            'expense_breakdown' =>
+                $expenseBreakdown,
+
             'total' => [
                 'revenue' =>
                     $totalRevenue,
@@ -267,6 +277,152 @@ class FinancialSummaryController extends Controller
                     $totalSurplus,
             ],
         ];
+    }
+
+
+    private function expenseBreakdown(
+        int $month,
+        int $year
+    ): array {
+        $categories = [
+            'electricity' =>
+                'Listrik',
+
+            'water' =>
+                'Air',
+
+            'internet' =>
+                'Internet',
+
+            'salary' =>
+                'Gaji',
+
+            'tax' =>
+                'Pajak',
+
+            'transport' =>
+                'Transportasi',
+
+            'office_supplies' =>
+                'Perlengkapan Kantor',
+
+            'marketing' =>
+                'Marketing',
+
+            'rent' =>
+                'Sewa',
+
+            'bank_fee' =>
+                'Biaya Bank',
+
+            'other' =>
+                'Lainnya',
+        ];
+
+        $expenses = Expense::query()
+            ->selectRaw(
+                'area, category, SUM(amount) as total'
+            )
+            ->whereYear(
+                'expense_date',
+                $year
+            )
+            ->whereMonth(
+                'expense_date',
+                $month
+            )
+            ->groupBy(
+                'area',
+                'category'
+            )
+            ->get();
+
+        $rows = [];
+
+        foreach (
+            $categories as $category => $label
+        ) {
+            $homestay = (float) (
+                $expenses
+                    ->first(
+                        fn ($expense) =>
+                            $expense->area
+                                === 'homestay'
+                            && $expense->category
+                                === $category
+                    )
+                    ?->total
+                ?? 0
+            );
+
+            $cafe = (float) (
+                $expenses
+                    ->first(
+                        fn ($expense) =>
+                            $expense->area
+                                === 'cafe'
+                            && $expense->category
+                                === $category
+                    )
+                    ?->total
+                ?? 0
+            );
+
+            $general = (float) (
+                $expenses
+                    ->first(
+                        fn ($expense) =>
+                            $expense->area
+                                === 'general'
+                            && $expense->category
+                                === $category
+                    )
+                    ?->total
+                ?? 0
+            );
+
+            $total =
+                $homestay
+                + $cafe
+                + $general;
+
+            /*
+             * Kategori bernilai 0 tidak perlu
+             * ditampilkan di laporan.
+             */
+            if ($total <= 0) {
+                continue;
+            }
+
+            $rows[] = [
+                'category' =>
+                    $category,
+
+                'label' =>
+                    $label,
+
+                'homestay' =>
+                    $homestay,
+
+                'cafe' =>
+                    $cafe,
+
+                'general' =>
+                    $general,
+
+                'total' =>
+                    $total,
+            ];
+        }
+
+        usort(
+            $rows,
+            fn ($a, $b) =>
+                $b['total']
+                <=> $a['total']
+        );
+
+        return $rows;
     }
 
 
