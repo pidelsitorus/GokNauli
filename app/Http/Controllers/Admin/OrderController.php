@@ -93,10 +93,17 @@ class OrderController extends Controller
             ],
         ]);
 
-        $order->update([
-            'payment_status' =>
-                $validated['payment_status'],
-        ]);
+        $newStatus = $validated['payment_status'];
+
+        if (
+            $newStatus === 'paid'
+            && $order->payment_status !== 'paid'
+        ) {
+            $order->paid_at = now();
+        }
+
+        $order->payment_status = $newStatus;
+        $order->save();
 
         return back()->with(
             'success',

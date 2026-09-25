@@ -24,6 +24,7 @@ class Order extends Model
     protected function casts(): array
     {
         return [
+            'paid_at' => 'datetime',
             'subtotal' => 'decimal:2',
         ];
     }

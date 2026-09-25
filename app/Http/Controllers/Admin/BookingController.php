@@ -27,17 +27,25 @@ class BookingController extends Controller
                 $query->where('status', $request->status);
             })
             ->when($request->filled('payment_status'), function ($query) use ($request) {
-                $query->where('payment_status', $request->payment_status);
+                $query->where(
+                    'payment_status',
+                    $request->payment_status
+                );
             })
             ->latest()
             ->paginate(15)
             ->withQueryString();
 
-        return view('admin.bookings.index', compact('bookings'));
+        return view(
+            'admin.bookings.index',
+            compact('bookings')
+        );
     }
 
-    public function updateStatus(Request $request, Booking $booking)
-    {
+    public function updateStatus(
+        Request $request,
+        Booking $booking
+    ) {
         $validated = $request->validate([
             'status' => [
                 'required',
@@ -61,8 +69,10 @@ class BookingController extends Controller
         );
     }
 
-    public function updatePayment(Request $request, Booking $booking)
-    {
+    public function updatePayment(
+        Request $request,
+        Booking $booking
+    ) {
         $validated = $request->validate([
             'payment_status' => [
                 'required',
@@ -75,9 +85,17 @@ class BookingController extends Controller
             ],
         ]);
 
-        $booking->update([
-            'payment_status' => $validated['payment_status'],
-        ]);
+        $newStatus = $validated['payment_status'];
+
+        if (
+            $newStatus === 'paid'
+            && $booking->payment_status !== 'paid'
+        ) {
+            $booking->paid_at = now();
+        }
+
+        $booking->payment_status = $newStatus;
+        $booking->save();
 
         return back()->with(
             'success',

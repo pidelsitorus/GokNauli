@@ -113,7 +113,7 @@
     <thead>
 
         <tr>
-            <th>Tanggal</th>
+            <th>Tanggal Bayar</th>
             <th>Kode Booking</th>
             <th>Tamu</th>
             <th>Kamar</th>
@@ -131,7 +131,7 @@
         <tr>
 
             <td>
-                {{ $booking->created_at->format('d/m/Y') }}
+                {{ $booking->paid_at?->format('d/m/Y H:i') ?? '-' }}
             </td>
 
             <td>

@@ -26,16 +26,16 @@ class StatementController extends Controller
             'payment_status',
             'paid'
         )
-            ->whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
+            ->whereYear('paid_at', $year)
+            ->whereMonth('paid_at', $month)
             ->sum('total_price');
 
         $homestayTransactions = Booking::where(
             'payment_status',
             'paid'
         )
-            ->whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
+            ->whereYear('paid_at', $year)
+            ->whereMonth('paid_at', $month)
             ->count();
 
 
@@ -43,16 +43,16 @@ class StatementController extends Controller
             'payment_status',
             'paid'
         )
-            ->whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
+            ->whereYear('paid_at', $year)
+            ->whereMonth('paid_at', $month)
             ->sum('subtotal');
 
         $cafeTransactions = Order::where(
             'payment_status',
             'paid'
         )
-            ->whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
+            ->whereYear('paid_at', $year)
+            ->whereMonth('paid_at', $month)
             ->count();
 
 
@@ -78,9 +78,9 @@ class StatementController extends Controller
             'room.roomType',
         ])
             ->where('payment_status', 'paid')
-            ->whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
-            ->orderBy('created_at')
+            ->whereYear('paid_at', $year)
+            ->whereMonth('paid_at', $month)
+            ->orderBy('paid_at')
             ->get();
 
         $totalRevenue = $bookings->sum(
@@ -116,9 +116,9 @@ class StatementController extends Controller
             'items',
         ])
             ->where('payment_status', 'paid')
-            ->whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
-            ->orderBy('created_at')
+            ->whereYear('paid_at', $year)
+            ->whereMonth('paid_at', $month)
+            ->orderBy('paid_at')
             ->get();
 
         $totalRevenue = $orders->sum(

@@ -113,7 +113,7 @@
     <thead>
 
         <tr>
-            <th>Tanggal</th>
+            <th>Tanggal Bayar</th>
             <th>Kode Order</th>
             <th>Customer</th>
             <th>Jenis</th>
@@ -130,7 +130,7 @@
         <tr>
 
             <td>
-                {{ $order->created_at->format('d/m/Y') }}
+                {{ $order->paid_at?->format('d/m/Y H:i') ?? '-' }}
             </td>
 
             <td>
