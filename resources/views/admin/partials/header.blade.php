@@ -372,6 +372,20 @@
         </a>
 
 
+        <a
+            href="{{ route(
+                'admin.operational-reports.index',
+                [],
+                false
+            ) }}"
+            class="{{ request()->routeIs(
+                'admin.operational-reports.*'
+            ) ? 'active' : '' }}"
+        >
+            Ops Report
+        </a>
+
+
         <details class="admin-notification">
 
             <summary title="Notifikasi Operasional">

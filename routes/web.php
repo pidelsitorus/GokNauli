@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\RoomController as AdminRoomController;
 use App\Http\Controllers\Admin\RoomTypeController as AdminRoomTypeController;
 use App\Http\Controllers\Admin\TableReservationController as AdminTableReservationController;
 use App\Http\Controllers\Admin\StatementController as AdminStatementController;
+use App\Http\Controllers\Admin\OperationalReportController as AdminOperationalReportController;
 use App\Http\Controllers\Admin\InventoryController as AdminInventoryController;
 use App\Http\Controllers\Admin\FacilityController as AdminFacilityController;
 
@@ -243,6 +244,28 @@ Route::prefix('admin')->group(function () {
             '/inventory/{inventoryItem}/movements',
             [AdminInventoryController::class, 'storeMovement']
         )->name('admin.inventory.movements.store');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Operational Reports
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get(
+            '/operational-reports',
+            [AdminOperationalReportController::class, 'index']
+        )->name('admin.operational-reports.index');
+
+        Route::get(
+            '/operational-reports/homestay',
+            [AdminOperationalReportController::class, 'homestay']
+        )->name('admin.operational-reports.homestay');
+
+        Route::get(
+            '/operational-reports/cafe',
+            [AdminOperationalReportController::class, 'cafe']
+        )->name('admin.operational-reports.cafe');
 
 
         Route::get(
