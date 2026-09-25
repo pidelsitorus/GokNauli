@@ -408,6 +408,51 @@
         color: #e1e5df;
     }
 
+
+    .contact-details {
+        max-width: 1000px;
+        margin: 35px auto 0;
+        display: grid;
+        grid-template-columns:
+            repeat(auto-fit, minmax(210px, 1fr));
+        gap: 16px;
+        text-align: left;
+    }
+
+    .contact-card {
+        background: rgba(255,255,255,.08);
+        border: 1px solid rgba(255,255,255,.10);
+        border-radius: 14px;
+        padding: 20px;
+    }
+
+    .contact-card span {
+        display: block;
+        color: #bfcabd;
+        font-size: 12px;
+        margin-bottom: 7px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .contact-card strong {
+        color: white;
+        line-height: 1.6;
+    }
+
+    .contact-actions {
+        margin-top: 28px;
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .contact-outline {
+        border: 1px solid rgba(255,255,255,.7);
+        color: white;
+    }
+
     @media (max-width: 850px) {
         .about-grid,
         .service-grid {
@@ -1099,23 +1144,121 @@
 
     <p>
         Ada pertanyaan mengenai kamar, reservasi,
-        atau Cafe & Resto? Hubungi kami melalui WhatsApp.
+        Cafe & Resto, atau kunjungan Anda?
+        Hubungi Gok Nauli melalui informasi berikut.
     </p>
 
-    @if (config('goknauli.whatsapp_number'))
 
-        <a
-            class="btn btn-light"
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://wa.me/{{ config(
-                'goknauli.whatsapp_number'
-            ) }}"
-        >
-            Hubungi via WhatsApp
-        </a>
+    <div class="contact-details">
 
-    @endif
+        @if (config('goknauli.address'))
+
+            <div class="contact-card">
+
+                <span>
+                    Alamat
+                </span>
+
+                <strong>
+                    {{ config('goknauli.address') }}
+                </strong>
+
+            </div>
+
+        @endif
+
+
+        @if (config('goknauli.cafe_hours'))
+
+            <div class="contact-card">
+
+                <span>
+                    Jam Cafe & Resto
+                </span>
+
+                <strong>
+                    {{ config('goknauli.cafe_hours') }}
+                </strong>
+
+            </div>
+
+        @endif
+
+
+        @if (
+            config('goknauli.checkin_time')
+            || config('goknauli.checkout_time')
+        )
+
+            <div class="contact-card">
+
+                <span>
+                    Homestay
+                </span>
+
+                <strong>
+                    Check-in:
+                    {{ config('goknauli.checkin_time') ?: '-' }}
+
+                    <br>
+
+                    Check-out:
+                    {{ config('goknauli.checkout_time') ?: '-' }}
+                </strong>
+
+            </div>
+
+        @endif
+
+    </div>
+
+
+    <div class="contact-actions">
+
+        @if (config('goknauli.whatsapp_number'))
+
+            <a
+                class="btn btn-light"
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://wa.me/{{ config(
+                    'goknauli.whatsapp_number'
+                ) }}"
+            >
+                WhatsApp
+            </a>
+
+        @endif
+
+
+        @if (config('goknauli.google_maps_url'))
+
+            <a
+                class="btn contact-outline"
+                target="_blank"
+                rel="noopener noreferrer"
+                href="{{ config('goknauli.google_maps_url') }}"
+            >
+                Google Maps
+            </a>
+
+        @endif
+
+
+        @if (config('goknauli.instagram_url'))
+
+            <a
+                class="btn contact-outline"
+                target="_blank"
+                rel="noopener noreferrer"
+                href="{{ config('goknauli.instagram_url') }}"
+            >
+                Instagram
+            </a>
+
+        @endif
+
+    </div>
 
 </section>
 

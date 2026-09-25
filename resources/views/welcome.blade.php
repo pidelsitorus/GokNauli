@@ -453,9 +453,75 @@
         color: white;
     }
 
+
+    .location-section {
+        background: #f7f5ef;
+    }
+
+    .location-grid {
+        display: grid;
+        grid-template-columns: .85fr 1.15fr;
+        gap: 28px;
+        align-items: stretch;
+    }
+
+    .location-card {
+        background: white;
+        border-radius: 18px;
+        padding: 30px;
+        box-shadow: 0 8px 30px rgba(0,0,0,.06);
+    }
+
+    .location-card h3 {
+        margin: 0 0 18px;
+        font-size: 24px;
+    }
+
+    .location-info {
+        margin-bottom: 20px;
+    }
+
+    .location-info span {
+        display: block;
+        margin-bottom: 5px;
+        color: #777;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .location-info strong {
+        display: block;
+        line-height: 1.6;
+    }
+
+    .location-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 25px;
+    }
+
+    .map-wrapper {
+        min-height: 420px;
+        border-radius: 18px;
+        overflow: hidden;
+        background: #dde3d7;
+        box-shadow: 0 8px 30px rgba(0,0,0,.06);
+    }
+
+    .map-wrapper iframe {
+        width: 100%;
+        height: 100%;
+        min-height: 420px;
+        border: 0;
+        display: block;
+    }
+
     @media (max-width: 850px) {
         .about-grid,
-        .service-grid {
+        .service-grid,
+        .location-grid {
             grid-template-columns: 1fr;
         }
 
@@ -1125,6 +1191,150 @@
             </div>
 
         @endforeach
+
+    </div>
+
+</section>
+
+@endif
+
+
+
+@if (config('goknauli.address'))
+
+<section class="home-section location-section">
+
+    <div class="section-header">
+
+        <span>
+            Lokasi
+        </span>
+
+        <h2>
+            Temukan Gok Nauli
+        </h2>
+
+        <p>
+            Gunakan peta berikut untuk melihat lokasi
+            dan mendapatkan petunjuk arah menuju Gok Nauli.
+        </p>
+
+    </div>
+
+
+    <div class="location-grid">
+
+        <div class="location-card">
+
+            <h3>
+                Gok Nauli Homestay Cafe & Resto
+            </h3>
+
+
+            <div class="location-info">
+
+                <span>
+                    Alamat
+                </span>
+
+                <strong>
+                    {{ config('goknauli.address') }}
+                </strong>
+
+            </div>
+
+
+            @if (config('goknauli.cafe_hours'))
+
+                <div class="location-info">
+
+                    <span>
+                        Jam Cafe & Resto
+                    </span>
+
+                    <strong>
+                        {{ config('goknauli.cafe_hours') }}
+                    </strong>
+
+                </div>
+
+            @endif
+
+
+            @if (
+                config('goknauli.checkin_time')
+                || config('goknauli.checkout_time')
+            )
+
+                <div class="location-info">
+
+                    <span>
+                        Homestay
+                    </span>
+
+                    <strong>
+                        Check-in:
+                        {{ config('goknauli.checkin_time') ?: '-' }}
+
+                        <br>
+
+                        Check-out:
+                        {{ config('goknauli.checkout_time') ?: '-' }}
+                    </strong>
+
+                </div>
+
+            @endif
+
+
+            <div class="location-actions">
+
+                @if (config('goknauli.google_maps_url'))
+
+                    <a
+                        class="btn btn-primary"
+                        href="{{ config('goknauli.google_maps_url') }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Buka Google Maps
+                    </a>
+
+                @endif
+
+
+                @if (config('goknauli.whatsapp_number'))
+
+                    <a
+                        class="btn"
+                        style="
+                            background:#eef3e9;
+                            color:#31563a;
+                        "
+                        href="https://wa.me/{{ config('goknauli.whatsapp_number') }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        WhatsApp
+                    </a>
+
+                @endif
+
+            </div>
+
+        </div>
+
+
+        <div class="map-wrapper">
+
+            <iframe
+                src="https://www.google.com/maps?q={{ urlencode(config('goknauli.address')) }}&output=embed"
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                title="Lokasi Gok Nauli"
+            ></iframe>
+
+        </div>
 
     </div>
 
