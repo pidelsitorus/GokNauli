@@ -7,6 +7,7 @@ use App\Models\Room;
 use App\Models\RoomType;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 
 class RoomController extends Controller
 {
@@ -46,9 +47,22 @@ class RoomController extends Controller
             ],
             'description' => ['nullable', 'string'],
             'is_active' => ['nullable', 'boolean'],
+            'image' => [
+                'nullable',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:4096',
+            ],
         ]);
 
+
         $validated['is_active'] = $request->boolean('is_active');
+
+        if ($request->hasFile('image')) {
+            $validated['image'] =
+                $request->file('image')
+                ->store('rooms', 'public');
+        }
 
         Room::create($validated);
 
@@ -92,9 +106,27 @@ class RoomController extends Controller
             ],
             'description' => ['nullable', 'string'],
             'is_active' => ['nullable', 'boolean'],
+            'image' => [
+                'nullable',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:4096',
+            ],
         ]);
 
         $validated['is_active'] = $request->boolean('is_active');
+
+        if ($request->hasFile('image')) {
+
+            if ($room->image) {
+                Storage::disk('public')
+                    ->delete($room->image);
+            }
+
+            $validated['image'] =
+                $request->file('image')
+                ->store('rooms', 'public');
+        }
 
         $room->update($validated);
 

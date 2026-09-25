@@ -127,6 +127,7 @@
 
         <form
             method="POST"
+            enctype="multipart/form-data"
             action="{{ route('admin.rooms.update', $room, false) }}"
         >
             @method('PUT')

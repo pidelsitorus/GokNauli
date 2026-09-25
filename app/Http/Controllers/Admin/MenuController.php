@@ -8,6 +8,7 @@ use App\Models\MenuCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 
 class MenuController extends Controller
 {
@@ -42,6 +43,12 @@ class MenuController extends Controller
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_available' => ['nullable', 'boolean'],
             'is_active' => ['nullable', 'boolean'],
+            'image' => [
+                'nullable',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:4096',
+            ],
         ]);
 
         $baseSlug = Str::slug($validated['name']);
@@ -57,6 +64,12 @@ class MenuController extends Controller
         $validated['sort_order'] = $validated['sort_order'] ?? 0;
         $validated['is_available'] = $request->boolean('is_available');
         $validated['is_active'] = $request->boolean('is_active');
+
+        if ($request->hasFile('image')) {
+            $validated['image'] =
+                $request->file('image')
+                ->store('menus', 'public');
+        }
 
         Menu::create($validated);
 
@@ -88,6 +101,12 @@ class MenuController extends Controller
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_available' => ['nullable', 'boolean'],
             'is_active' => ['nullable', 'boolean'],
+            'image' => [
+                'nullable',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:4096',
+            ],
         ]);
 
         $baseSlug = Str::slug($validated['name']);
@@ -96,8 +115,8 @@ class MenuController extends Controller
 
         while (
             Menu::where('slug', $slug)
-                ->where('id', '!=', $menu->id)
-                ->exists()
+            ->where('id', '!=', $menu->id)
+            ->exists()
         ) {
             $slug = $baseSlug . '-' . $counter;
             $counter++;
@@ -107,6 +126,18 @@ class MenuController extends Controller
         $validated['sort_order'] = $validated['sort_order'] ?? 0;
         $validated['is_available'] = $request->boolean('is_available');
         $validated['is_active'] = $request->boolean('is_active');
+
+        if ($request->hasFile('image')) {
+
+            if ($menu->image) {
+                Storage::disk('public')
+                    ->delete($menu->image);
+            }
+
+            $validated['image'] =
+                $request->file('image')
+                ->store('menus', 'public');
+        }
 
         $menu->update($validated);
 

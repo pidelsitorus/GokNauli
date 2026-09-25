@@ -266,8 +266,7 @@
             grid-template-columns:
                 1.4fr
                 1fr
-                1fr
-                1.2fr;
+                1fr;
 
             gap: 40px;
         }
@@ -612,79 +611,6 @@
                         ) }}"
                     >
                         WhatsApp
-                    </a>
-
-                @endif
-
-            </div>
-
-        </div>
-
-
-        <div>
-
-            <div class="footer-title">
-                Informasi
-            </div>
-
-            <div class="footer-links">
-
-                @if (config('goknauli.address'))
-
-                    <span>
-                        {{ config('goknauli.address') }}
-                    </span>
-
-                @endif
-
-
-                @if (config('goknauli.cafe_hours'))
-
-                    <span>
-                        Cafe & Resto:
-                        {{ config('goknauli.cafe_hours') }}
-                    </span>
-
-                @endif
-
-
-                @if (
-                    config('goknauli.checkin_time')
-                    || config('goknauli.checkout_time')
-                )
-
-                    <span>
-                        Check-in:
-                        {{ config('goknauli.checkin_time') ?: '-' }}
-                        <br>
-                        Check-out:
-                        {{ config('goknauli.checkout_time') ?: '-' }}
-                    </span>
-
-                @endif
-
-
-                @if (config('goknauli.google_maps_url'))
-
-                    <a
-                        href="{{ config('goknauli.google_maps_url') }}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        Buka Google Maps
-                    </a>
-
-                @endif
-
-
-                @if (config('goknauli.instagram_url'))
-
-                    <a
-                        href="{{ config('goknauli.instagram_url') }}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        Instagram
                     </a>
 
                 @endif

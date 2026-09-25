@@ -5,17 +5,16 @@
 
     <select name="room_type_id" required>
         @foreach ($roomTypes as $type)
-            <option
-                value="{{ $type->id }}"
-                @selected(
-                    old(
-                        'room_type_id',
-                        $room->room_type_id ?? ''
-                    ) == $type->id
-                )
+        <option
+            value="{{ $type->id }}"
+            @selected(
+            old( 'room_type_id' ,
+            $room->room_type_id ?? ''
+            ) == $type->id
+            )
             >
-                {{ $type->name }}
-            </option>
+            {{ $type->name }}
+        </option>
         @endforeach
     </select>
 </div>
@@ -30,8 +29,7 @@
             name="room_number"
             value="{{ old('room_number', $room->room_number ?? '') }}"
             placeholder="Contoh: GN-101"
-            required
-        >
+            required>
     </div>
 
     <div class="form-group">
@@ -41,8 +39,7 @@
             type="text"
             name="name"
             value="{{ old('name', $room->name ?? '') }}"
-            required
-        >
+            required>
     </div>
 
 </div>
@@ -56,8 +53,7 @@
             type="number"
             name="price"
             value="{{ old('price', $room->price ?? '') }}"
-            min="0"
-        >
+            min="0">
     </div>
 
     <div class="form-group">
@@ -66,23 +62,22 @@
         <select name="status">
 
             @foreach ([
-                'available' => 'Available',
-                'occupied' => 'Occupied',
-                'maintenance' => 'Maintenance',
-                'inactive' => 'Inactive',
+            'available' => 'Available',
+            'occupied' => 'Occupied',
+            'maintenance' => 'Maintenance',
+            'inactive' => 'Inactive',
             ] as $value => $label)
 
-                <option
-                    value="{{ $value }}"
-                    @selected(
-                        old(
-                            'status',
-                            $room->status ?? 'available'
-                        ) === $value
-                    )
+            <option
+                value="{{ $value }}"
+                @selected(
+                old( 'status' ,
+                $room->status ?? 'available'
+                ) === $value
+                )
                 >
-                    {{ $label }}
-                </option>
+                {{ $label }}
+            </option>
 
             @endforeach
 
@@ -106,11 +101,10 @@
         name="is_active"
         value="1"
         @checked(
-            old(
-                'is_active',
-                $room->is_active ?? true
-            )
-        )
+        old( 'is_active' ,
+        $room->is_active ?? true
+    )
+    )
     >
 
     Kamar aktif dan dapat ditampilkan
@@ -118,19 +112,54 @@
 
 @if ($errors->any())
 
-    <div class="error">
+<div class="error">
 
-        <strong>Periksa data berikut:</strong>
+    <strong>Periksa data berikut:</strong>
 
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
+    <ul>
+        @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+
+</div>
+
+@endif
+
+<div class="form-group">
+
+    <label>
+        Foto Kamar
+    </label>
+
+    @if (!empty($room?->image))
+
+    <div style="margin-bottom:12px">
+
+        <img
+            src="{{ asset('storage/' . $room->image) }}"
+            alt="{{ $room->name }}"
+            style="
+                    width:220px;
+                    height:140px;
+                    object-fit:cover;
+                    border-radius:10px;
+                ">
 
     </div>
 
-@endif
+    @endif
+
+    <input
+        type="file"
+        name="image"
+        accept=".jpg,.jpeg,.png,.webp">
+
+    <small>
+        JPG, PNG atau WebP. Maksimal 4 MB.
+    </small>
+
+</div>
 
 <button type="submit">
     Simpan Kamar

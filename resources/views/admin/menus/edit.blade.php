@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,9 @@
     <title>Edit Menu - Gok Nauli</title>
 
     <style>
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
 
         body {
             margin: 0;
@@ -86,24 +89,25 @@
 
 <body>
 
-<main>
+    <main>
 
-    <div class="card">
+        <div class="card">
 
-        <h1>Edit Menu</h1>
+            <h1>Edit Menu</h1>
 
-        <form
-            method="POST"
-            action="{{ route('admin.menus.update', $menu, false) }}"
-        >
-            @method('PUT')
+            <form
+                method="POST"
+                enctype="multipart/form-data"
+                action="{{ route('admin.menus.update', $menu, false) }}">
+                @method('PUT')
 
-            @include('admin.menus._form')
-        </form>
+                @include('admin.menus._form')
+            </form>
 
-    </div>
+        </div>
 
-</main>
+    </main>
 
 </body>
+
 </html>

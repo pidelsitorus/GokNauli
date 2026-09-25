@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tambah Kamar - Gok Nauli</title>
 
     <style>
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
 
         body {
             margin: 0;
@@ -36,7 +39,7 @@
             background: white;
             padding: 30px;
             border-radius: 16px;
-            box-shadow: 0 6px 25px rgba(0,0,0,.06);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, .06);
         }
 
         .form-group {
@@ -108,32 +111,33 @@
 
 <body>
 
-<header>
-    <a href="{{ route('admin.rooms.index', [], false) }}">
-        ← Kembali ke Room Management
-    </a>
-</header>
+    <header>
+        <a href="{{ route('admin.rooms.index', [], false) }}">
+            ← Kembali ke Room Management
+        </a>
+    </header>
 
-<main>
+    <main>
 
-    <div class="card">
+        <div class="card">
 
-        <h1>Tambah Kamar</h1>
+            <h1>Tambah Kamar</h1>
 
-        <p>Tambahkan kamar baru untuk Gok Nauli Homestay.</p>
+            <p>Tambahkan kamar baru untuk Gok Nauli Homestay.</p>
 
-        <form
-            method="POST"
-            action="{{ route('admin.rooms.store', [], false) }}"
-        >
+            <form
+                method="POST"
+                enctype="multipart/form-data"
+                action="{{ route('admin.rooms.store', [], false) }}">
 
-            @include('admin.rooms._form')
+                @include('admin.rooms._form')
 
-        </form>
+            </form>
 
-    </div>
+        </div>
 
-</main>
+    </main>
 
 </body>
+
 </html>
