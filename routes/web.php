@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\RoomController as AdminRoomController;
 use App\Http\Controllers\Admin\RoomTypeController as AdminRoomTypeController;
 use App\Http\Controllers\Admin\TableReservationController as AdminTableReservationController;
 use App\Http\Controllers\Admin\StatementController as AdminStatementController;
+use App\Http\Controllers\Admin\InventoryController as AdminInventoryController;
 
 use App\Http\Controllers\Admin\RestaurantTableController as AdminRestaurantTableController;
 use App\Http\Controllers\Admin\MenuController as AdminMenuController;
@@ -158,6 +159,48 @@ Route::prefix('admin')->group(function () {
             '/orders/{order}/payment',
             [AdminOrderController::class, 'updatePayment']
         )->name('admin.orders.payment');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Inventory
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get(
+            '/inventory',
+            [AdminInventoryController::class, 'index']
+        )->name('admin.inventory.index');
+
+        Route::get(
+            '/inventory/create',
+            [AdminInventoryController::class, 'create']
+        )->name('admin.inventory.create');
+
+        Route::post(
+            '/inventory',
+            [AdminInventoryController::class, 'store']
+        )->name('admin.inventory.store');
+
+        Route::get(
+            '/inventory/{inventoryItem}/edit',
+            [AdminInventoryController::class, 'edit']
+        )->name('admin.inventory.edit');
+
+        Route::put(
+            '/inventory/{inventoryItem}',
+            [AdminInventoryController::class, 'update']
+        )->name('admin.inventory.update');
+
+        Route::get(
+            '/inventory/{inventoryItem}/movements',
+            [AdminInventoryController::class, 'movements']
+        )->name('admin.inventory.movements');
+
+        Route::post(
+            '/inventory/{inventoryItem}/movements',
+            [AdminInventoryController::class, 'storeMovement']
+        )->name('admin.inventory.movements.store');
+
 
         Route::get(
     '/statements',

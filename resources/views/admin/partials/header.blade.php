@@ -294,6 +294,20 @@
 
         <a
             href="{{ route(
+                'admin.inventory.index',
+                [],
+                false
+            ) }}"
+            class="{{ request()->routeIs(
+                'admin.inventory.*'
+            ) ? 'active' : '' }}"
+        >
+            Inventory
+        </a>
+
+
+        <a
+            href="{{ route(
                 'admin.statements.index',
                 [],
                 false

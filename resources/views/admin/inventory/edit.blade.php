@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Edit Inventory - Gok Nauli</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f5f1;
+            color: #293229;
+        }
+
+        main {
+            width: 94%;
+            max-width: 900px;
+            margin: 35px auto;
+        }
+
+        .card {
+            background: white;
+            padding: 28px;
+            border-radius: 14px;
+            box-shadow: 0 5px 20px rgba(0,0,0,.05);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(2, 1fr);
+            gap: 18px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #d5d9d3;
+            border-radius: 8px;
+            font-family: inherit;
+        }
+
+        textarea {
+            min-height: 100px;
+        }
+
+        .checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox input {
+            width: auto;
+        }
+
+        .stock-info {
+            padding: 16px;
+            background: #eef3e9;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stock-info strong {
+            font-size: 22px;
+            color: #31563a;
+        }
+
+        .actions {
+            margin-top: 25px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 11px 16px;
+            border: 0;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            background: #31563a;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #e9ece7;
+            color: #293229;
+        }
+
+        .error-box {
+            background: #fdebea;
+            color: #a12822;
+            padding: 15px;
+            border-radius: 9px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 700px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+@include('admin.partials.header')
+
+<main>
+
+    <h1>Edit Barang</h1>
+
+    <p>
+        {{ $inventoryItem->item_code }}
+        —
+        {{ $inventoryItem->name }}
+    </p>
+
+
+    <div class="stock-info">
+
+        Stok saat ini:
+
+        <strong>
+            {{ number_format(
+                $inventoryItem->current_stock,
+                3,
+                ',',
+                '.'
+            ) }}
+            {{ $inventoryItem->unit }}
+        </strong>
+
+        <br><br>
+
+        Stok tidak dapat diedit langsung.
+        Gunakan menu pergerakan stok.
+
+    </div>
+
+
+    <div class="card">
+
+        <form
+            method="POST"
+            action="{{ route(
+                'admin.inventory.update',
+                $inventoryItem,
+                false
+            ) }}"
+        >
+            @csrf
+            @method('PUT')
+
+            @include('admin.inventory._form')
+
+
+            <div class="actions">
+
+                <button
+                    class="btn"
+                    type="submit"
+                >
+                    Simpan Perubahan
+                </button>
+
+                <a
+                    class="btn btn-secondary"
+                    href="{{ route(
+                        'admin.inventory.movements',
+                        $inventoryItem,
+                        false
+                    ) }}"
+                >
+                    Riwayat Stok
+                </a>
+
+                <a
+                    class="btn btn-secondary"
+                    href="{{ route(
+                        'admin.inventory.index',
+                        [],
+                        false
+                    ) }}"
+                >
+                    Kembali
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</main>
+
+</body>
+
+</html>

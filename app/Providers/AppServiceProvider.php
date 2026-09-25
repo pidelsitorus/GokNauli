@@ -32,6 +32,7 @@ class AppServiceProvider extends ServiceProvider
                 'admin.tables.*',
                 'admin.orders.*',
                 'admin.statements.index',
+                'admin.inventory.*',
             ],
             function ($view) {
                 $adminCheckoutNotifications = Booking::with([
