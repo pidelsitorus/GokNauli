@@ -7,7 +7,10 @@ use App\Models\Booking;
 use App\Models\Order;
 use App\Models\TableReservation;
 use App\Models\InventoryItem;
+use App\Models\InventoryMovement;
 use App\Models\FacilityAsset;
+use App\Models\FacilityHistory;
+use App\Models\Expense;
 
 class DashboardController extends Controller
 {
@@ -129,22 +132,341 @@ class DashboardController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Owner Financial Statistics
+        | Owner Financial Overview
         |--------------------------------------------------------------------------
         */
 
+        $financialOverview = null;
+
         if (auth()->user()?->isOwner()) {
-            $stats['homestay_revenue'] =
-                Booking::where(
+
+            $currentStart =
+                now()->copy()->startOfMonth();
+
+            $currentEnd =
+                now()->copy()->endOfMonth();
+
+            $previousStart =
+                now()->copy()
+                    ->subMonthNoOverflow()
+                    ->startOfMonth();
+
+            $previousEnd =
+                now()->copy()
+                    ->subMonthNoOverflow()
+                    ->endOfMonth();
+
+
+            /*
+             * Revenue bulan berjalan.
+             */
+            $homestayRevenue = (float) Booking::query()
+                ->where(
                     'payment_status',
                     'paid'
-                )->sum('total_price');
+                )
+                ->whereBetween(
+                    'paid_at',
+                    [
+                        $currentStart,
+                        $currentEnd,
+                    ]
+                )
+                ->sum('total_price');
+
+            $cafeRevenue = (float) Order::query()
+                ->where(
+                    'payment_status',
+                    'paid'
+                )
+                ->whereBetween(
+                    'paid_at',
+                    [
+                        $currentStart,
+                        $currentEnd,
+                    ]
+                )
+                ->sum('subtotal');
+
+            $currentRevenue =
+                $homestayRevenue
+                + $cafeRevenue;
+
+
+            /*
+             * Revenue bulan sebelumnya.
+             */
+            $previousRevenue =
+                (float) Booking::query()
+                    ->where(
+                        'payment_status',
+                        'paid'
+                    )
+                    ->whereBetween(
+                        'paid_at',
+                        [
+                            $previousStart,
+                            $previousEnd,
+                        ]
+                    )
+                    ->sum('total_price')
+                +
+                (float) Order::query()
+                    ->where(
+                        'payment_status',
+                        'paid'
+                    )
+                    ->whereBetween(
+                        'paid_at',
+                        [
+                            $previousStart,
+                            $previousEnd,
+                        ]
+                    )
+                    ->sum('subtotal');
+
+
+            /*
+             * Inventory cost.
+             */
+            $movementTypes = [
+                'USED',
+                'DAMAGED',
+                'LOST',
+                'ADJUSTMENT_OUT',
+            ];
+
+            $currentInventoryCost =
+                (float) InventoryMovement::query()
+                    ->whereIn(
+                        'movement_type',
+                        $movementTypes
+                    )
+                    ->whereBetween(
+                        'occurred_at',
+                        [
+                            $currentStart,
+                            $currentEnd,
+                        ]
+                    )
+                    ->sum('total_cost');
+
+            $previousInventoryCost =
+                (float) InventoryMovement::query()
+                    ->whereIn(
+                        'movement_type',
+                        $movementTypes
+                    )
+                    ->whereBetween(
+                        'occurred_at',
+                        [
+                            $previousStart,
+                            $previousEnd,
+                        ]
+                    )
+                    ->sum('total_cost');
+
+
+            /*
+             * Facilities cost.
+             */
+            $currentFacilityCost =
+                (float) FacilityHistory::query()
+                    ->whereBetween(
+                        'occurred_at',
+                        [
+                            $currentStart,
+                            $currentEnd,
+                        ]
+                    )
+                    ->sum('cost');
+
+            $previousFacilityCost =
+                (float) FacilityHistory::query()
+                    ->whereBetween(
+                        'occurred_at',
+                        [
+                            $previousStart,
+                            $previousEnd,
+                        ]
+                    )
+                    ->sum('cost');
+
+
+            /*
+             * Expenses.
+             */
+            $currentExpenseCost =
+                (float) Expense::query()
+                    ->whereBetween(
+                        'expense_date',
+                        [
+                            $currentStart->toDateString(),
+                            $currentEnd->toDateString(),
+                        ]
+                    )
+                    ->sum('amount');
+
+            $previousExpenseCost =
+                (float) Expense::query()
+                    ->whereBetween(
+                        'expense_date',
+                        [
+                            $previousStart->toDateString(),
+                            $previousEnd->toDateString(),
+                        ]
+                    )
+                    ->sum('amount');
+
+
+            $currentOperationalCost =
+                $currentInventoryCost
+                + $currentFacilityCost
+                + $currentExpenseCost;
+
+            $previousOperationalCost =
+                $previousInventoryCost
+                + $previousFacilityCost
+                + $previousExpenseCost;
+
+
+            $currentSurplus =
+                $currentRevenue
+                - $currentOperationalCost;
+
+            $previousSurplus =
+                $previousRevenue
+                - $previousOperationalCost;
+
+
+            /*
+             * Top 5 Expense categories.
+             */
+            $categoryLabels = [
+                'electricity' => 'Listrik',
+                'water' => 'Air',
+                'internet' => 'Internet',
+                'salary' => 'Gaji',
+                'tax' => 'Pajak',
+                'transport' => 'Transportasi',
+                'office_supplies' =>
+                    'Perlengkapan Kantor',
+                'marketing' => 'Marketing',
+                'rent' => 'Sewa',
+                'bank_fee' => 'Biaya Bank',
+                'other' => 'Lainnya',
+            ];
+
+            $topExpenses = Expense::query()
+                ->selectRaw(
+                    'category, SUM(amount) as total'
+                )
+                ->whereBetween(
+                    'expense_date',
+                    [
+                        $currentStart->toDateString(),
+                        $currentEnd->toDateString(),
+                    ]
+                )
+                ->groupBy('category')
+                ->orderByDesc('total')
+                ->take(5)
+                ->get()
+                ->map(
+                    function ($expense) use (
+                        $categoryLabels
+                    ) {
+                        return [
+                            'label' =>
+                                $categoryLabels[
+                                    $expense->category
+                                ]
+                                ?? $expense->category,
+
+                            'total' =>
+                                (float) $expense->total,
+                        ];
+                    }
+                );
+
+
+            $financialOverview = [
+                'period' =>
+                    $currentStart
+                        ->locale('id')
+                        ->translatedFormat('F Y'),
+
+                'previous_period' =>
+                    $previousStart
+                        ->locale('id')
+                        ->translatedFormat('F Y'),
+
+                'homestay_revenue' =>
+                    $homestayRevenue,
+
+                'cafe_revenue' =>
+                    $cafeRevenue,
+
+                'revenue' =>
+                    $currentRevenue,
+
+                'inventory_cost' =>
+                    $currentInventoryCost,
+
+                'facility_cost' =>
+                    $currentFacilityCost,
+
+                'expense_cost' =>
+                    $currentExpenseCost,
+
+                'operational_cost' =>
+                    $currentOperationalCost,
+
+                'surplus' =>
+                    $currentSurplus,
+
+                'previous_revenue' =>
+                    $previousRevenue,
+
+                'previous_operational_cost' =>
+                    $previousOperationalCost,
+
+                'previous_surplus' =>
+                    $previousSurplus,
+
+                'revenue_change' =>
+                    $this->percentageChange(
+                        $currentRevenue,
+                        $previousRevenue
+                    ),
+
+                'cost_change' =>
+                    $this->percentageChange(
+                        $currentOperationalCost,
+                        $previousOperationalCost
+                    ),
+
+                'surplus_change' =>
+                    $this->percentageChange(
+                        $currentSurplus,
+                        $previousSurplus
+                    ),
+
+                'top_expenses' =>
+                    $topExpenses,
+            ];
+
+
+            /*
+             * Dipertahankan untuk kartu
+             * Homestay & Cafe yang sudah ada.
+             * Sekarang nilainya adalah bulan berjalan.
+             */
+            $stats['homestay_revenue'] =
+                $homestayRevenue;
 
             $stats['cafe_revenue'] =
-                Order::where(
-                    'payment_status',
-                    'paid'
-                )->sum('subtotal');
+                $cafeRevenue;
         }
 
 
@@ -237,9 +559,26 @@ class DashboardController extends Controller
                 'checkoutNotificationCount',
                 'lowStockItems',
                 'facilityAttention',
-                'maintenanceDue'
+                'maintenanceDue',
+                'financialOverview'
 
             )
         );
+
+    }
+
+
+    private function percentageChange(
+        float $current,
+        float $previous
+    ): ?float {
+        if ($previous == 0.0) {
+            return null;
+        }
+
+        return (
+            ($current - $previous)
+            / abs($previous)
+        ) * 100;
     }
 }

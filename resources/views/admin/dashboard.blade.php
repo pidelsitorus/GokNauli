@@ -398,6 +398,320 @@
         </p>
 
 
+        {{-- Owner Financial Overview Dashboard --}}
+        @if (
+            auth()->user()?->isOwner()
+            && $financialOverview
+        )
+
+        <h2 class="section-title">
+            Financial Overview —
+            {{ $financialOverview['period'] }}
+        </h2>
+
+
+        <div class="stats">
+
+            <div class="stat-card">
+                <span>Total Pendapatan</span>
+
+                <strong>
+                    Rp {{ number_format(
+                        $financialOverview['revenue'],
+                        0,
+                        ',',
+                        '.'
+                    ) }}
+                </strong>
+            </div>
+
+
+            <div class="stat-card">
+                <span>Total Biaya Operasional</span>
+
+                <strong>
+                    Rp {{ number_format(
+                        $financialOverview[
+                            'operational_cost'
+                        ],
+                        0,
+                        ',',
+                        '.'
+                    ) }}
+                </strong>
+            </div>
+
+
+            <div class="stat-card">
+                <span>Total Expenses</span>
+
+                <strong>
+                    Rp {{ number_format(
+                        $financialOverview[
+                            'expense_cost'
+                        ],
+                        0,
+                        ',',
+                        '.'
+                    ) }}
+                </strong>
+            </div>
+
+
+            <div class="stat-card">
+                <span>Surplus Operasional</span>
+
+                <strong>
+                    Rp {{ number_format(
+                        $financialOverview['surplus'],
+                        0,
+                        ',',
+                        '.'
+                    ) }}
+                </strong>
+            </div>
+
+        </div>
+
+
+        <div class="operations-grid">
+
+            <div class="operation-panel">
+
+                <div class="operation-panel-header">
+                    <h3>
+                        Pendapatan & Biaya
+                    </h3>
+                </div>
+
+                <div style="padding: 15px;">
+
+                    <p>
+                        Homestay:
+                        <strong>
+                            Rp {{ number_format(
+                                $financialOverview[
+                                    'homestay_revenue'
+                                ],
+                                0,
+                                ',',
+                                '.'
+                            ) }}
+                        </strong>
+                    </p>
+
+                    <p>
+                        Cafe & Resto:
+                        <strong>
+                            Rp {{ number_format(
+                                $financialOverview[
+                                    'cafe_revenue'
+                                ],
+                                0,
+                                ',',
+                                '.'
+                            ) }}
+                        </strong>
+                    </p>
+
+                    <p>
+                        Inventory:
+                        <strong>
+                            Rp {{ number_format(
+                                $financialOverview[
+                                    'inventory_cost'
+                                ],
+                                0,
+                                ',',
+                                '.'
+                            ) }}
+                        </strong>
+                    </p>
+
+                    <p>
+                        Facilities:
+                        <strong>
+                            Rp {{ number_format(
+                                $financialOverview[
+                                    'facility_cost'
+                                ],
+                                0,
+                                ',',
+                                '.'
+                            ) }}
+                        </strong>
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="operation-panel">
+
+                <div class="operation-panel-header">
+                    <h3>
+                        Top Expenses
+                    </h3>
+                </div>
+
+                <div style="padding: 15px;">
+
+                    @forelse (
+                        $financialOverview[
+                            'top_expenses'
+                        ] as $expense
+                    )
+
+                    <p>
+                        {{ $expense['label'] }}
+
+                        <strong style="float: right;">
+                            Rp {{ number_format(
+                                $expense['total'],
+                                0,
+                                ',',
+                                '.'
+                            ) }}
+                        </strong>
+                    </p>
+
+                    @empty
+
+                    <p>
+                        Belum ada Expenses
+                        bulan ini.
+                    </p>
+
+                    @endforelse
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="operation-panel"
+            style="margin-top: 18px;"
+        >
+
+            <div class="operation-panel-header">
+
+                <h3>
+                    Perbandingan dengan
+                    {{ $financialOverview[
+                        'previous_period'
+                    ] }}
+                </h3>
+
+            </div>
+
+            <div style="padding: 15px;">
+
+                <p>
+                    Pendapatan:
+
+                    <strong>
+                        @if (
+                            $financialOverview[
+                                'revenue_change'
+                            ] === null
+                        )
+
+                            Belum dapat dibandingkan
+
+                        @else
+
+                            {{ number_format(
+                                $financialOverview[
+                                    'revenue_change'
+                                ],
+                                1,
+                                ',',
+                                '.'
+                            ) }}%
+
+                        @endif
+                    </strong>
+                </p>
+
+
+                <p>
+                    Biaya Operasional:
+
+                    <strong>
+                        @if (
+                            $financialOverview[
+                                'cost_change'
+                            ] === null
+                        )
+
+                            Belum dapat dibandingkan
+
+                        @else
+
+                            {{ number_format(
+                                $financialOverview[
+                                    'cost_change'
+                                ],
+                                1,
+                                ',',
+                                '.'
+                            ) }}%
+
+                        @endif
+                    </strong>
+                </p>
+
+
+                <p>
+                    Surplus:
+
+                    <strong>
+                        @if (
+                            $financialOverview[
+                                'surplus_change'
+                            ] === null
+                        )
+
+                            Belum dapat dibandingkan
+
+                        @else
+
+                            {{ number_format(
+                                $financialOverview[
+                                    'surplus_change'
+                                ],
+                                1,
+                                ',',
+                                '.'
+                            ) }}%
+
+                        @endif
+                    </strong>
+                </p>
+
+
+                <a
+                    href="{{ route(
+                        'admin.financial-summary.index',
+                        [],
+                        false
+                    ) }}"
+                >
+                    Lihat Financial Summary →
+                </a>
+
+            </div>
+
+        </div>
+
+        @endif
+        {{-- End Owner Financial Overview Dashboard --}}
+
+
         <h2 class="section-title">
             Homestay
         </h2>
