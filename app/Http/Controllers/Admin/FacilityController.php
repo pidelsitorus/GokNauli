@@ -134,6 +134,13 @@ class FacilityController extends Controller
             $request
         );
 
+        /*
+         * Harga aset merupakan informasi owner.
+         */
+        if (!auth()->user()?->isOwner()) {
+            unset($validated['purchase_price']);
+        }
+
         $validated['asset_code'] =
             $this->generateAssetCode(
                 $validated['area']
@@ -201,6 +208,14 @@ class FacilityController extends Controller
         $validated = $this->validateAsset(
             $request
         );
+
+        /*
+         * Receptionist tidak boleh melihat atau
+         * mengubah harga pembelian aset.
+         */
+        if (!auth()->user()?->isOwner()) {
+            unset($validated['purchase_price']);
+        }
 
         $validated['is_active'] =
             $request->boolean('is_active');
@@ -312,6 +327,14 @@ class FacilityController extends Controller
             ],
         ]);
 
+
+        /*
+         * Biaya maintenance/repair merupakan
+         * informasi finansial owner.
+         */
+        if (!auth()->user()?->isOwner()) {
+            unset($validated['cost']);
+        }
 
         DB::transaction(function () use (
             $validated,
@@ -442,6 +465,41 @@ class FacilityController extends Controller
         return back()->with(
             'success',
             'Riwayat fasilitas berhasil dicatat.'
+        );
+    }
+
+
+    public function updateHistoryCost(
+        Request $request,
+        FacilityAsset $facilityAsset,
+        FacilityHistory $history
+    ) {
+        /*
+         * Pastikan history benar-benar milik
+         * facility yang ada pada URL.
+         */
+        abort_unless(
+            $history->facility_asset_id
+                === $facilityAsset->id,
+            404
+        );
+
+        $validated = $request->validate([
+            'cost' => [
+                'nullable',
+                'numeric',
+                'min:0',
+            ],
+        ]);
+
+        $history->update([
+            'cost' =>
+                $validated['cost'] ?? null,
+        ]);
+
+        return back()->with(
+            'success',
+            'Biaya aktivitas fasilitas berhasil diperbarui.'
         );
     }
 

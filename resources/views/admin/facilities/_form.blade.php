@@ -208,7 +208,10 @@
     </div>
 
 
-    <div class="form-group">
+        {-- Owner Only: Facility Purchase Price --}
+    @if (auth()->user()?->isOwner())
+
+<div class="form-group">
 
         <label for="purchase_price">
             Harga Pembelian
@@ -227,6 +230,8 @@
         >
 
     </div>
+
+    @endif
 
 
     <div class="form-group">

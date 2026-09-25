@@ -301,7 +301,10 @@
                 </div>
 
 
-                <div class="form-group">
+                    {-- Owner Only: Inventory Unit Cost --}
+    @if (auth()->user()?->isOwner())
+
+<div class="form-group">
 
                     <label for="unit_cost">
                         Biaya / Satuan
@@ -318,6 +321,8 @@
                     >
 
                 </div>
+
+    @endif
 
 
                 <div class="form-group">

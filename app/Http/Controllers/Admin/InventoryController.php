@@ -197,6 +197,15 @@ class InventoryController extends Controller
         ]);
 
 
+        /*
+         * Nilai finansial hanya boleh ditentukan owner.
+         * Receptionist tetap dapat membuat barang,
+         * tetapi tidak dapat menentukan harga.
+         */
+        if (!auth()->user()?->isOwner()) {
+            unset($validated['purchase_price']);
+        }
+
         DB::transaction(function () use (
             $request,
             $validated
@@ -392,6 +401,14 @@ class InventoryController extends Controller
             ],
         ]);
 
+        /*
+         * Receptionist tidak boleh mengubah harga
+         * barang yang sudah ditetapkan owner.
+         */
+        if (!auth()->user()?->isOwner()) {
+            unset($validated['purchase_price']);
+        }
+
         $validated['is_active'] =
             $request->boolean('is_active');
 
@@ -484,6 +501,17 @@ class InventoryController extends Controller
             ],
         ]);
 
+
+        /*
+         * Receptionist tidak boleh menentukan biaya.
+         *
+         * Untuk receptionist, unit_cost akan dihitung
+         * otomatis menggunakan purchase_price barang
+         * yang telah ditentukan owner.
+         */
+        if (!auth()->user()?->isOwner()) {
+            unset($validated['unit_cost']);
+        }
 
         DB::transaction(function () use (
             $validated,

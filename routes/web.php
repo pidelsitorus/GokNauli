@@ -211,6 +211,14 @@ Route::prefix('admin')->group(function () {
             [AdminFacilityController::class, 'storeHistory']
         )->name('admin.facilities.histories.store');
 
+          Route::patch(
+              '/facilities/{facilityAsset}/histories/{history}/cost',
+              [AdminFacilityController::class, 'updateHistoryCost']
+          )
+              ->middleware(OwnerMiddleware::class)
+              ->name('admin.facilities.histories.cost');
+
+
 
         Route::get(
             '/inventory',

@@ -340,7 +340,10 @@
                 </div>
 
 
-                <div class="form-group">
+                    {-- Owner Only: Facility Activity Cost --}
+    @if (auth()->user()?->isOwner())
+
+<div class="form-group">
 
                     <label for="cost">
                         Biaya
@@ -356,6 +359,8 @@
                     >
 
                 </div>
+
+    @endif
 
 
                 <div class="form-group">
@@ -491,17 +496,95 @@
 
                     <td>
 
-                        @if ($history->cost !== null)
+                        @if (auth()->user()?->isOwner())
 
-                            Rp {{ number_format(
-                                $history->cost,
-                                0,
-                                ',',
-                                '.'
-                            ) }}
+                            @if ($history->cost !== null)
 
-                        @else
-                            -
+                                <strong>
+                                    Rp {{ number_format(
+                                        $history->cost,
+                                        0,
+                                        ',',
+                                        '.'
+                                    ) }}
+                                </strong>
+
+                            @else
+
+                                <span style="color: #777;">
+                                    Belum diisi
+                                </span>
+
+                            @endif
+
+
+                            <details
+                                style="margin-top: 7px;"
+                            >
+
+                                <summary
+                                    style="
+                                        cursor: pointer;
+                                        color: #31563a;
+                                        font-weight: 600;
+                                    "
+                                >
+                                    Edit Biaya
+                                </summary>
+
+
+                                <form
+                                    class="owner-facility-cost-form"
+                                    method="POST"
+                                    action="{{ route(
+                                        'admin.facilities.histories.cost',
+                                        [
+                                            $facilityAsset,
+                                            $history
+                                        ],
+                                        false
+                                    ) }}"
+                                    style="margin-top: 8px;"
+                                >
+
+                                    @csrf
+                                    @method('PATCH')
+
+
+                                    <input
+                                        type="number"
+                                        name="cost"
+                                        min="0"
+                                        step="0.01"
+                                        value="{{ $history->cost }}"
+                                        placeholder="Contoh: 450000"
+                                        style="
+                                            width: 130px;
+                                            padding: 7px;
+                                            border: 1px solid #ccc;
+                                            border-radius: 6px;
+                                        "
+                                    >
+
+
+                                    <button
+                                        type="submit"
+                                        style="
+                                            padding: 7px 10px;
+                                            border: 0;
+                                            border-radius: 6px;
+                                            background: #31563a;
+                                            color: white;
+                                            cursor: pointer;
+                                        "
+                                    >
+                                        Simpan
+                                    </button>
+
+                                </form>
+
+                            </details>
+
                         @endif
 
                     </td>
