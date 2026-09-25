@@ -111,6 +111,8 @@
 
 <body>
 
+@include('admin.partials.header')
+
     <header>
         <a href="{{ route('admin.rooms.index', [], false) }}">
             ← Kembali ke Room Management

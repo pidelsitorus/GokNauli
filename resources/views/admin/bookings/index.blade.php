@@ -189,32 +189,7 @@
 
 <body>
 
-<header>
-
-    <h2>Gok Nauli Admin</h2>
-
-    <nav>
-
-        <a href="{{ route('admin.dashboard', [], false) }}">
-            Dashboard
-        </a>
-
-        <a href="{{ route('admin.bookings.index', [], false) }}">
-            Booking
-        </a>
-
-        <form method="POST"
-              action="{{ route('admin.logout', [], false) }}">
-            @csrf
-
-            <button class="logout" type="submit">
-                Logout
-            </button>
-        </form>
-
-    </nav>
-
-</header>
+@include('admin.partials.header')
 
 <main>
 

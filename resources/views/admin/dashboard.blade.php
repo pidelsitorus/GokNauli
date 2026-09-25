@@ -280,60 +280,9 @@
 
 <body>
 
-    <header>
+@include('admin.partials.header')
 
-        <strong>
-            Gok Nauli Admin
-        </strong>
-
-        <nav>
-
-            <a href="{{ route('admin.dashboard', [], false) }}">
-                Dashboard
-            </a>
-
-            <a href="{{ route('admin.bookings.index', [], false) }}">
-                Booking
-            </a>
-
-            <a href="{{ route('admin.rooms.index', [], false) }}">
-                Rooms
-            </a>
-
-            <a href="{{ route('admin.menus.index', [], false) }}">
-                Menu
-            </a>
-
-            <a href="{{ route('admin.reservations.index', [], false) }}">
-                Reservations
-            </a>
-
-            <a href="{{ route('admin.tables.index', [], false) }}">
-                Tables
-            </a>
-
-            <a href="{{ route('admin.orders.index', [], false) }}">
-                Orders
-            </a>
-
-            <form
-                method="POST"
-                action="{{ route('admin.logout', [], false) }}">
-                @csrf
-
-                <button
-                    class="logout"
-                    type="submit">
-                    Logout
-                </button>
-
-            </form>
-
-        </nav>
-
-    </header>
-
-    <main>
+<main>
 
         <h1>Dashboard</h1>
 
