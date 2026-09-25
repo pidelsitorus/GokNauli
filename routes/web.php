@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\Admin\RoomController as AdminRoomController;
 use App\Http\Controllers\Admin\RoomTypeController as AdminRoomTypeController;
 use App\Http\Controllers\Admin\TableReservationController as AdminTableReservationController;
+use App\Http\Controllers\Admin\StatementController as AdminStatementController;
 
 use App\Http\Controllers\Admin\RestaurantTableController as AdminRestaurantTableController;
 use App\Http\Controllers\Admin\MenuController as AdminMenuController;
@@ -157,6 +158,21 @@ Route::prefix('admin')->group(function () {
             '/orders/{order}/payment',
             [AdminOrderController::class, 'updatePayment']
         )->name('admin.orders.payment');
+
+        Route::get(
+    '/statements',
+    [AdminStatementController::class, 'index']
+)->name('admin.statements.index');
+
+Route::get(
+    '/statements/homestay',
+    [AdminStatementController::class, 'homestay']
+)->name('admin.statements.homestay');
+
+Route::get(
+    '/statements/cafe',
+    [AdminStatementController::class, 'cafe']
+)->name('admin.statements.cafe');
     });
 });
 

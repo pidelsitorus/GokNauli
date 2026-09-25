@@ -11,6 +11,45 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        /*
+        |--------------------------------------------------------------------------
+        | Checkout Notifications
+        |--------------------------------------------------------------------------
+        |
+        | Hanya booking dengan status checked_in yang dianggap
+        | masih sedang menginap.
+        |
+        */
+
+        $checkoutToday = Booking::with([
+            'room.roomType',
+        ])
+            ->where('status', 'checked_in')
+            ->whereDate('check_out', today())
+            ->orderBy('check_out')
+            ->get();
+
+
+        $overdueCheckouts = Booking::with([
+            'room.roomType',
+        ])
+            ->where('status', 'checked_in')
+            ->whereDate('check_out', '<', today())
+            ->orderBy('check_out')
+            ->get();
+
+
+        $checkoutNotificationCount =
+            $checkoutToday->count()
+            + $overdueCheckouts->count();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Dashboard Statistics
+        |--------------------------------------------------------------------------
+        */
+
         $stats = [
             'bookings_total' => Booking::count(),
 
@@ -23,6 +62,10 @@ class DashboardController extends Controller
                 'status',
                 'checked_in'
             )->count(),
+
+            'checkout_today' => $checkoutToday->count(),
+
+            'checkout_overdue' => $overdueCheckouts->count(),
 
             'homestay_revenue' => Booking::where(
                 'payment_status',
@@ -37,7 +80,13 @@ class DashboardController extends Controller
             'reservations_pending' => TableReservation::where(
                 'status',
                 'pending'
-            )->count(),
+            )
+                ->whereDate(
+                    'reservation_date',
+                    '>=',
+                    today()
+                )
+                ->count(),
 
             'orders_today' => Order::whereDate(
                 'created_at',
@@ -60,6 +109,13 @@ class DashboardController extends Controller
             )->sum('subtotal'),
         ];
 
+
+        /*
+        |--------------------------------------------------------------------------
+        | Latest Activities
+        |--------------------------------------------------------------------------
+        */
+
         $latestBookings = Booking::with([
             'room.roomType',
         ])
@@ -67,11 +123,29 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
+        $checkedInBookings = Booking::with([
+            'room.roomType',
+        ])
+            ->where('status', 'checked_in')
+            ->orderBy('check_out')
+            ->get();
+
         $latestReservations = TableReservation::with(
             'restaurantTable'
         )
-            ->latest()
-            ->take(5)
+            ->whereDate(
+                'reservation_date',
+                today()
+            )
+            ->whereNotIn(
+                'status',
+                [
+                    'completed',
+                    'cancelled',
+                ]
+            )
+            ->orderBy('reservation_time')
+            ->take(10)
             ->get();
 
         $latestOrders = Order::with([
@@ -82,13 +156,19 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
+
         return view(
             'admin.dashboard',
             compact(
                 'stats',
                 'latestBookings',
                 'latestReservations',
-                'latestOrders'
+                'latestOrders',
+                'checkedInBookings',
+                'checkoutToday',
+                'overdueCheckouts',
+                'checkoutNotificationCount'
+
             )
         );
     }
