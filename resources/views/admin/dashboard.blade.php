@@ -610,91 +610,126 @@
 
             <div style="padding: 15px;">
 
-                <p>
-                    Pendapatan:
-
-                    <strong>
-                        @if (
-                            $financialOverview[
-                                'revenue_change'
-                            ] === null
-                        )
-
-                            Belum dapat dibandingkan
-
-                        @else
-
-                            {{ number_format(
+                @php
+                    $comparisons = [
+                        [
+                            'label' => 'Pendapatan',
+                            'value' =>
                                 $financialOverview[
                                     'revenue_change'
                                 ],
-                                1,
-                                ',',
-                                '.'
-                            ) }}%
-
-                        @endif
-                    </strong>
-                </p>
-
-
-                <p>
-                    Biaya Operasional:
-
-                    <strong>
-                        @if (
-                            $financialOverview[
-                                'cost_change'
-                            ] === null
-                        )
-
-                            Belum dapat dibandingkan
-
-                        @else
-
-                            {{ number_format(
+                            'inverse' => false,
+                        ],
+                        [
+                            'label' => 'Biaya Operasional',
+                            'value' =>
                                 $financialOverview[
                                     'cost_change'
                                 ],
-                                1,
-                                ',',
-                                '.'
-                            ) }}%
-
-                        @endif
-                    </strong>
-                </p>
-
-
-                <p>
-                    Surplus:
-
-                    <strong>
-                        @if (
-                            $financialOverview[
-                                'surplus_change'
-                            ] === null
-                        )
-
-                            Belum dapat dibandingkan
-
-                        @else
-
-                            {{ number_format(
+                            'inverse' => true,
+                        ],
+                        [
+                            'label' => 'Surplus',
+                            'value' =>
                                 $financialOverview[
                                     'surplus_change'
                                 ],
-                                1,
-                                ',',
-                                '.'
-                            ) }}%
+                            'inverse' => false,
+                        ],
+                    ];
+                @endphp
+
+
+                @foreach (
+                    $comparisons as $comparison
+                )
+
+                    @php
+                        $value =
+                            $comparison['value'];
+
+                        if ($value === null) {
+                            $indicatorColor =
+                                '#6b7280';
+
+                            $indicatorArrow =
+                                '';
+                        } elseif ($value > 0) {
+                            $indicatorArrow =
+                                '↑';
+
+                            $indicatorColor =
+                                $comparison['inverse']
+                                    ? '#c62828'
+                                    : '#2e7d32';
+                        } elseif ($value < 0) {
+                            $indicatorArrow =
+                                '↓';
+
+                            $indicatorColor =
+                                $comparison['inverse']
+                                    ? '#2e7d32'
+                                    : '#c62828';
+                        } else {
+                            $indicatorArrow =
+                                '→';
+
+                            $indicatorColor =
+                                '#6b7280';
+                        }
+                    @endphp
+
+
+                    <p
+                        style="
+                            display: flex;
+                            justify-content: space-between;
+                            gap: 15px;
+                        "
+                    >
+
+                        <span>
+                            {{ $comparison['label'] }}
+                        </span>
+
+
+                        @if ($value === null)
+
+                            <strong
+                                style="
+                                    color:
+                                    {{ $indicatorColor }};
+                                "
+                            >
+                                Belum dapat dibandingkan
+                            </strong>
+
+                        @else
+
+                            <strong
+                                style="
+                                    color:
+                                    {{ $indicatorColor }};
+                                "
+                            >
+                                {{ $indicatorArrow }}
+
+                                {{ number_format(
+                                    abs($value),
+                                    1,
+                                    ',',
+                                    '.'
+                                ) }}%
+                            </strong>
 
                         @endif
-                    </strong>
-                </p>
+
+                    </p>
+
+                @endforeach
 
 
-                <a
+<a
                     href="{{ route(
                         'admin.financial-summary.index',
                         [],
