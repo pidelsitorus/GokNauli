@@ -69,11 +69,6 @@ class DashboardController extends Controller
 
             'checkout_overdue' => $overdueCheckouts->count(),
 
-            'homestay_revenue' => Booking::where(
-                'payment_status',
-                'paid'
-            )->sum('total_price'),
-
             'reservations_today' => TableReservation::whereDate(
                 'reservation_date',
                 today()
@@ -105,10 +100,6 @@ class DashboardController extends Controller
                 ]
             )->count(),
 
-            'cafe_revenue' => Order::where(
-                'payment_status',
-                'paid'
-            )->sum('subtotal'),
 
             'inventory_low_stock' =>
                 InventoryItem::where(
@@ -134,6 +125,27 @@ class DashboardController extends Controller
                     ->maintenanceDue()
                     ->count(),
         ];
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Owner Financial Statistics
+        |--------------------------------------------------------------------------
+        */
+
+        if (auth()->user()?->isOwner()) {
+            $stats['homestay_revenue'] =
+                Booking::where(
+                    'payment_status',
+                    'paid'
+                )->sum('total_price');
+
+            $stats['cafe_revenue'] =
+                Order::where(
+                    'payment_status',
+                    'paid'
+                )->sum('subtotal');
+        }
 
 
         /*

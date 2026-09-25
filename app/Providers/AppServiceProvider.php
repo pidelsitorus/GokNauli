@@ -35,6 +35,7 @@ class AppServiceProvider extends ServiceProvider
                 'admin.orders.*',
                 'admin.statements.index',
                 'admin.operational-reports.*',
+                'admin.financial-summary.*',
                 'admin.inventory.*',
                 'admin.facilities.*',
             ],

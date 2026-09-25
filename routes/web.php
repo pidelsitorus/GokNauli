@@ -8,12 +8,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\OwnerMiddleware;
 use App\Http\Controllers\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\Admin\RoomController as AdminRoomController;
 use App\Http\Controllers\Admin\RoomTypeController as AdminRoomTypeController;
 use App\Http\Controllers\Admin\TableReservationController as AdminTableReservationController;
 use App\Http\Controllers\Admin\StatementController as AdminStatementController;
 use App\Http\Controllers\Admin\OperationalReportController as AdminOperationalReportController;
+use App\Http\Controllers\Admin\FinancialSummaryController as AdminFinancialSummaryController;
 use App\Http\Controllers\Admin\InventoryController as AdminInventoryController;
 use App\Http\Controllers\Admin\FacilityController as AdminFacilityController;
 
@@ -252,36 +254,53 @@ Route::prefix('admin')->group(function () {
         |--------------------------------------------------------------------------
         */
 
+        /*
+        |--------------------------------------------------------------------------
+        | Financial Summary
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get(
+            '/financial-summary',
+            [AdminFinancialSummaryController::class, 'index']
+        )->middleware(OwnerMiddleware::class)->name('admin.financial-summary.index');
+
+        Route::get(
+            '/financial-summary/pdf',
+            [AdminFinancialSummaryController::class, 'download']
+        )->middleware(OwnerMiddleware::class)->name('admin.financial-summary.download');
+
+
         Route::get(
             '/operational-reports',
             [AdminOperationalReportController::class, 'index']
-        )->name('admin.operational-reports.index');
+        )->middleware(OwnerMiddleware::class)->name('admin.operational-reports.index');
 
         Route::get(
             '/operational-reports/homestay',
             [AdminOperationalReportController::class, 'homestay']
-        )->name('admin.operational-reports.homestay');
+        )->middleware(OwnerMiddleware::class)->name('admin.operational-reports.homestay');
 
         Route::get(
             '/operational-reports/cafe',
             [AdminOperationalReportController::class, 'cafe']
-        )->name('admin.operational-reports.cafe');
+        )->middleware(OwnerMiddleware::class)->name('admin.operational-reports.cafe');
 
 
         Route::get(
     '/statements',
     [AdminStatementController::class, 'index']
-)->name('admin.statements.index');
+)->middleware(OwnerMiddleware::class)->name('admin.statements.index');
 
 Route::get(
     '/statements/homestay',
     [AdminStatementController::class, 'homestay']
-)->name('admin.statements.homestay');
+)->middleware(OwnerMiddleware::class)->name('admin.statements.homestay');
 
 Route::get(
     '/statements/cafe',
     [AdminStatementController::class, 'cafe']
-)->name('admin.statements.cafe');
+)->middleware(OwnerMiddleware::class)->name('admin.statements.cafe');
     });
 });
 

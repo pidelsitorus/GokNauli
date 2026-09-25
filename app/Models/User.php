@@ -15,6 +15,7 @@ use Illuminate\Notifications\Notifiable;
     'email',
     'password',
     'is_admin',
+    'role',
 ])]
 #[Hidden([
     'password',
@@ -30,6 +31,18 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
+    public function isOwner(): bool
+    {
+        return $this->is_admin
+            && $this->role === 'owner';
+    }
+
+    public function isReceptionist(): bool
+    {
+        return $this->is_admin
+            && $this->role === 'receptionist';
+    }
+
     protected function casts(): array
     {
         return [

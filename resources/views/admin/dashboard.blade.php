@@ -450,7 +450,10 @@
 
             </div>
 
-            <div class="stat-card">
+                        {{-- Owner Only: Homestay Revenue --}}
+            @if (auth()->user()?->isOwner())
+
+<div class="stat-card">
                 <span>Pendapatan Homestay</span>
 
                 <strong>
@@ -462,6 +465,8 @@
                 ) }}
                 </strong>
             </div>
+
+            @endif
 
         </div>
 
@@ -775,7 +780,10 @@
                 </strong>
             </div>
 
-            <div class="stat-card">
+                        {{-- Owner Only: Cafe Revenue --}}
+            @if (auth()->user()?->isOwner())
+
+<div class="stat-card">
                 <span>Pendapatan Cafe</span>
 
                 <strong>
@@ -787,6 +795,8 @@
                 ) }}
                 </strong>
             </div>
+
+            @endif
 
         </div>
 

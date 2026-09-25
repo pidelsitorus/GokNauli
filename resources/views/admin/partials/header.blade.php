@@ -358,6 +358,23 @@
         </a>
 
 
+        {{-- Owner Financial Menu --}}
+        @if (auth()->user()?->isOwner())
+
+        <a
+            href="{{ route(
+                'admin.financial-summary.index',
+                [],
+                false
+            ) }}"
+            class="{{ request()->routeIs(
+                'admin.financial-summary.*'
+            ) ? 'active' : '' }}"
+        >
+            Finance
+        </a>
+
+
         <a
             href="{{ route(
                 'admin.statements.index',
@@ -384,6 +401,9 @@
         >
             Ops Report
         </a>
+
+        @endif
+        {{-- End Owner Financial Menu --}}
 
 
         <details class="admin-notification">
