@@ -256,6 +256,113 @@
             color: #c0392b;
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | Inventory & Facilities
+        |--------------------------------------------------------------------------
+        */
+
+        .operations-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            margin-top: 22px;
+        }
+
+        .operation-panel {
+            background: white;
+            border-radius: 14px;
+            padding: 22px;
+            box-shadow:
+                0 5px 20px rgba(0, 0, 0, .05);
+        }
+
+        .operation-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .operation-panel-header h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .operation-panel-header a {
+            color: #31563a;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .operation-list {
+            display: grid;
+            gap: 11px;
+        }
+
+        .operation-item {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            background: #f7f8f5;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #293229;
+            border-left: 4px solid #d4dad0;
+        }
+
+        .operation-item:hover {
+            background: #f0f3ed;
+        }
+
+        .operation-item.warning {
+            background: #fff8e6;
+            border-left-color: #d99a00;
+        }
+
+        .operation-item.danger {
+            background: #fff0ee;
+            border-left-color: #c0392b;
+        }
+
+        .operation-item strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .operation-meta {
+            color: #6d746c;
+            font-size: 12px;
+            line-height: 1.55;
+        }
+
+        .operation-value {
+            font-weight: bold;
+            white-space: nowrap;
+            color: #31563a;
+        }
+
+        .operation-value.warning {
+            color: #a76f00;
+        }
+
+        .operation-value.danger {
+            color: #c0392b;
+        }
+
+        .operation-empty {
+            padding: 15px;
+            border-radius: 10px;
+            background: #edf7ed;
+            color: #31563a;
+            line-height: 1.6;
+        }
+
         .logout {
             background: none;
             border: 0;
@@ -679,6 +786,387 @@
                     '.'
                 ) }}
                 </strong>
+            </div>
+
+        </div>
+
+
+        {{-- Inventory & Facilities Dashboard --}}
+
+        <h2 class="section-title">
+            Inventory & Facilities
+        </h2>
+
+        <div class="stats">
+
+            <div
+                class="stat-card
+                    {{ $stats['inventory_low_stock'] > 0
+                        ? 'warning'
+                        : '' }}"
+            >
+                <span>
+                    ⚠ Stok Rendah
+                </span>
+
+                <strong>
+                    {{ $stats['inventory_low_stock'] }}
+                </strong>
+            </div>
+
+
+            <div
+                class="stat-card
+                    {{ $stats['facilities_attention'] > 0
+                        ? 'danger'
+                        : '' }}"
+            >
+                <span>
+                    🔧 Fasilitas Perlu Perhatian
+                </span>
+
+                <strong>
+                    {{ $stats['facilities_attention'] }}
+                </strong>
+            </div>
+
+
+            <div
+                class="stat-card
+                    {{ $stats['maintenance_due'] > 0
+                        ? 'warning'
+                        : '' }}"
+            >
+                <span>
+                    📅 Maintenance Jatuh Tempo
+                </span>
+
+                <strong>
+                    {{ $stats['maintenance_due'] }}
+                </strong>
+            </div>
+
+        </div>
+
+
+        <div class="operations-grid">
+
+            {{-- Low Stock --}}
+            <div class="operation-panel">
+
+                <div class="operation-panel-header">
+
+                    <h3>
+                        ⚠ Stok Rendah
+                    </h3>
+
+                    <a href="{{ route(
+                        'admin.inventory.index',
+                        [
+                            'low_stock' => 1
+                        ],
+                        false
+                    ) }}">
+                        Lihat Inventory →
+                    </a>
+
+                </div>
+
+
+                @if ($lowStockItems->count())
+
+                    <div class="operation-list">
+
+                        @foreach ($lowStockItems as $item)
+
+                            @php
+                                $stockEmpty =
+                                    (float) $item->current_stock
+                                    <= 0;
+                            @endphp
+
+                            <a
+                                class="
+                                    operation-item
+                                    {{ $stockEmpty
+                                        ? 'danger'
+                                        : 'warning' }}
+                                "
+                                href="{{ route(
+                                    'admin.inventory.movements',
+                                    $item,
+                                    false
+                                ) }}"
+                            >
+
+                                <div>
+
+                                    <strong>
+                                        {{ $item->name }}
+                                    </strong>
+
+                                    <div class="operation-meta">
+
+                                        {{ $item->area_label }}
+
+                                        @if ($item->location)
+                                            ·
+                                            {{ $item->location }}
+                                        @endif
+
+                                        <br>
+
+                                        Minimum:
+                                        {{ number_format(
+                                            $item->minimum_stock,
+                                            3,
+                                            ',',
+                                            '.'
+                                        ) }}
+
+                                        {{ $item->unit }}
+
+                                    </div>
+
+                                </div>
+
+
+                                <div
+                                    class="
+                                        operation-value
+                                        {{ $stockEmpty
+                                            ? 'danger'
+                                            : 'warning' }}
+                                    "
+                                >
+
+                                    {{ number_format(
+                                        $item->current_stock,
+                                        3,
+                                        ',',
+                                        '.'
+                                    ) }}
+
+                                    {{ $item->unit }}
+
+                                </div>
+
+                            </a>
+
+                        @endforeach
+
+                    </div>
+
+                @else
+
+                    <div class="operation-empty">
+                        ✓ Tidak ada barang dengan
+                        stok rendah.
+                    </div>
+
+                @endif
+
+            </div>
+
+
+            {{-- Facilities Attention --}}
+            <div class="operation-panel">
+
+                <div class="operation-panel-header">
+
+                    <h3>
+                        🔧 Fasilitas Perlu Perhatian
+                    </h3>
+
+                    <a href="{{ route(
+                        'admin.facilities.index',
+                        [
+                            'attention' => 1
+                        ],
+                        false
+                    ) }}">
+                        Lihat Facilities →
+                    </a>
+
+                </div>
+
+
+                @if ($facilityAttention->count())
+
+                    <div class="operation-list">
+
+                        @foreach (
+                            $facilityAttention
+                            as $asset
+                        )
+
+                            <a
+                                class="operation-item danger"
+                                href="{{ route(
+                                    'admin.facilities.histories',
+                                    $asset,
+                                    false
+                                ) }}"
+                            >
+
+                                <div>
+
+                                    <strong>
+                                        {{ $asset->name }}
+                                    </strong>
+
+                                    <div class="operation-meta">
+
+                                        {{ $asset->asset_code }}
+
+                                        <br>
+
+                                        {{ $asset->area_label }}
+
+                                        @if ($asset->location)
+                                            ·
+                                            {{ $asset->location }}
+                                        @endif
+
+                                    </div>
+
+                                </div>
+
+
+                                <div
+                                    class="
+                                        operation-value
+                                        danger
+                                    "
+                                >
+                                    {{ $asset
+                                        ->condition_label }}
+                                </div>
+
+                            </a>
+
+                        @endforeach
+
+                    </div>
+
+                @else
+
+                    <div class="operation-empty">
+                        ✓ Semua fasilitas aktif
+                        dalam kondisi normal.
+                    </div>
+
+                @endif
+
+            </div>
+
+
+            {{-- Maintenance Due --}}
+            <div class="operation-panel">
+
+                <div class="operation-panel-header">
+
+                    <h3>
+                        📅 Maintenance Jatuh Tempo
+                    </h3>
+
+                    <a href="{{ route(
+                        'admin.facilities.index',
+                        [],
+                        false
+                    ) }}">
+                        Lihat Facilities →
+                    </a>
+
+                </div>
+
+
+                @if ($maintenanceDue->count())
+
+                    <div class="operation-list">
+
+                        @foreach ($maintenanceDue as $asset)
+
+                            @php
+                                $overdue =
+                                    $asset
+                                        ->next_maintenance_at
+                                        ->lt(today());
+                            @endphp
+
+                            <a
+                                class="
+                                    operation-item
+                                    {{ $overdue
+                                        ? 'danger'
+                                        : 'warning' }}
+                                "
+                                href="{{ route(
+                                    'admin.facilities.histories',
+                                    $asset,
+                                    false
+                                ) }}"
+                            >
+
+                                <div>
+
+                                    <strong>
+                                        {{ $asset->name }}
+                                    </strong>
+
+                                    <div class="operation-meta">
+
+                                        {{ $asset->area_label }}
+
+                                        @if ($asset->location)
+                                            ·
+                                            {{ $asset->location }}
+                                        @endif
+
+                                        <br>
+
+                                        Jadwal:
+                                        {{ $asset
+                                            ->next_maintenance_at
+                                            ->format('d/m/Y') }}
+
+                                    </div>
+
+                                </div>
+
+
+                                <div
+                                    class="
+                                        operation-value
+                                        {{ $overdue
+                                            ? 'danger'
+                                            : 'warning' }}
+                                    "
+                                >
+
+                                    @if ($overdue)
+                                        Terlambat
+                                    @else
+                                        Hari Ini
+                                    @endif
+
+                                </div>
+
+                            </a>
+
+                        @endforeach
+
+                    </div>
+
+                @else
+
+                    <div class="operation-empty">
+                        ✓ Tidak ada maintenance
+                        yang jatuh tempo.
+                    </div>
+
+                @endif
+
             </div>
 
         </div>

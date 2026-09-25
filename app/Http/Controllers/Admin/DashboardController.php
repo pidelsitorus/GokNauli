@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Order;
 use App\Models\TableReservation;
+use App\Models\InventoryItem;
+use App\Models\FacilityAsset;
 
 class DashboardController extends Controller
 {
@@ -107,7 +109,59 @@ class DashboardController extends Controller
                 'payment_status',
                 'paid'
             )->sum('subtotal'),
+
+            'inventory_low_stock' =>
+                InventoryItem::where(
+                    'is_active',
+                    true
+                )
+                    ->lowStock()
+                    ->count(),
+
+            'facilities_attention' =>
+                FacilityAsset::where(
+                    'is_active',
+                    true
+                )
+                    ->needsAttention()
+                    ->count(),
+
+            'maintenance_due' =>
+                FacilityAsset::where(
+                    'is_active',
+                    true
+                )
+                    ->maintenanceDue()
+                    ->count(),
         ];
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Inventory & Facilities Alerts
+        |--------------------------------------------------------------------------
+        */
+
+        $lowStockItems = InventoryItem::query()
+            ->where('is_active', true)
+            ->lowStock()
+            ->orderBy('current_stock')
+            ->take(5)
+            ->get();
+
+        $facilityAttention = FacilityAsset::query()
+            ->where('is_active', true)
+            ->needsAttention()
+            ->orderBy('name')
+            ->take(5)
+            ->get();
+
+        $maintenanceDue = FacilityAsset::query()
+            ->where('is_active', true)
+            ->maintenanceDue()
+            ->orderBy('next_maintenance_at')
+            ->take(5)
+            ->get();
 
 
         /*
@@ -168,7 +222,10 @@ class DashboardController extends Controller
                 'checkedInBookings',
                 'checkoutToday',
                 'overdueCheckouts',
-                'checkoutNotificationCount'
+                'checkoutNotificationCount',
+                'lowStockItems',
+                'facilityAttention',
+                'maintenanceDue'
 
             )
         );

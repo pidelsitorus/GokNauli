@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\RoomTypeController as AdminRoomTypeController;
 use App\Http\Controllers\Admin\TableReservationController as AdminTableReservationController;
 use App\Http\Controllers\Admin\StatementController as AdminStatementController;
 use App\Http\Controllers\Admin\InventoryController as AdminInventoryController;
+use App\Http\Controllers\Admin\FacilityController as AdminFacilityController;
 
 use App\Http\Controllers\Admin\RestaurantTableController as AdminRestaurantTableController;
 use App\Http\Controllers\Admin\MenuController as AdminMenuController;
@@ -165,6 +166,48 @@ Route::prefix('admin')->group(function () {
         | Inventory
         |--------------------------------------------------------------------------
         */
+
+        /*
+        |--------------------------------------------------------------------------
+        | Facilities
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get(
+            '/facilities',
+            [AdminFacilityController::class, 'index']
+        )->name('admin.facilities.index');
+
+        Route::get(
+            '/facilities/create',
+            [AdminFacilityController::class, 'create']
+        )->name('admin.facilities.create');
+
+        Route::post(
+            '/facilities',
+            [AdminFacilityController::class, 'store']
+        )->name('admin.facilities.store');
+
+        Route::get(
+            '/facilities/{facilityAsset}/edit',
+            [AdminFacilityController::class, 'edit']
+        )->name('admin.facilities.edit');
+
+        Route::put(
+            '/facilities/{facilityAsset}',
+            [AdminFacilityController::class, 'update']
+        )->name('admin.facilities.update');
+
+        Route::get(
+            '/facilities/{facilityAsset}/histories',
+            [AdminFacilityController::class, 'histories']
+        )->name('admin.facilities.histories');
+
+        Route::post(
+            '/facilities/{facilityAsset}/histories',
+            [AdminFacilityController::class, 'storeHistory']
+        )->name('admin.facilities.histories.store');
+
 
         Route::get(
             '/inventory',

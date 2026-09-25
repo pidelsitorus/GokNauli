@@ -174,6 +174,44 @@
         background: #f7f8f5;
     }
 
+    .admin-notification-section {
+        padding: 9px 18px;
+        background: #f3f5f1;
+        border-bottom: 1px solid #e2e6df;
+        color: #647063;
+        font-size: 11px;
+        font-weight: bold;
+        letter-spacing: .6px;
+        text-transform: uppercase;
+    }
+
+    .admin-notification-item.inventory {
+        border-left: 4px solid #d59a00;
+    }
+
+    .admin-notification-item.facility {
+        border-left: 4px solid #c0392b;
+    }
+
+    .admin-notification-item.maintenance {
+        border-left: 4px solid #df8b00;
+    }
+
+    .admin-notification-item.inventory
+    .admin-notification-status {
+        color: #a56d00;
+    }
+
+    .admin-notification-item.facility
+    .admin-notification-status {
+        color: #c0392b;
+    }
+
+    .admin-notification-item.maintenance
+    .admin-notification-status {
+        color: #ad7000;
+    }
+
     .admin-shared-logout {
         margin: 0;
     }
@@ -308,6 +346,20 @@
 
         <a
             href="{{ route(
+                'admin.facilities.index',
+                [],
+                false
+            ) }}"
+            class="{{ request()->routeIs(
+                'admin.facilities.*'
+            ) ? 'active' : '' }}"
+        >
+            Facilities
+        </a>
+
+
+        <a
+            href="{{ route(
                 'admin.statements.index',
                 [],
                 false
@@ -322,18 +374,19 @@
 
         <details class="admin-notification">
 
-            <summary title="Notifikasi Checkout">
+            <summary title="Notifikasi Operasional">
 
                 <span class="admin-bell">
                     🔔
                 </span>
 
                 @if (
-                    ($adminCheckoutNotificationCount ?? 0) > 0
+                    ($adminOperationalNotificationCount ?? 0)
+                    > 0
                 )
 
                     <span class="admin-notification-badge">
-                        {{ $adminCheckoutNotificationCount }}
+                        {{ $adminOperationalNotificationCount }}
                     </span>
 
                 @endif
@@ -344,104 +397,363 @@
             <div class="admin-notification-dropdown">
 
                 <div class="admin-notification-title">
-                    Notifikasi Checkout
+                    Notifikasi Operasional
                 </div>
 
 
-                @forelse (
-                    ($adminCheckoutNotifications ?? collect())
-                    as $notification
+                @if (
+                    ($adminOperationalNotificationCount ?? 0)
+                    > 0
                 )
 
-                    @php
-                        $isOverdue =
-                            $notification->check_out
-                                ->isBefore(today());
-                    @endphp
+                    {{-- ================================= --}}
+                    {{-- CHECKOUT                          --}}
+                    {{-- ================================= --}}
+
+                    @if (
+                        ($adminCheckoutNotificationCount ?? 0)
+                        > 0
+                    )
+
+                        <div class="admin-notification-section">
+                            Homestay · Checkout
+                        </div>
+
+                        @foreach (
+                            $adminCheckoutNotifications
+                            as $booking
+                        )
+
+                            @php
+                                $checkoutOverdue =
+                                    $booking->check_out
+                                        ->lt(today());
+                            @endphp
+
+                            <a
+                                class="
+                                    admin-notification-item
+                                    {{ $checkoutOverdue
+                                        ? 'overdue'
+                                        : 'today' }}
+                                "
+                                href="{{ route(
+                                    'admin.bookings.index',
+                                    [
+                                        'search' =>
+                                            $booking->booking_code
+                                    ],
+                                    false
+                                ) }}"
+                            >
+
+                                <span
+                                    class="
+                                        admin-notification-status
+                                    "
+                                >
+                                    {{ $checkoutOverdue
+                                        ? '🔴 Terlambat Checkout'
+                                        : '🟠 Checkout Hari Ini' }}
+                                </span>
+
+                                <span
+                                    class="
+                                        admin-notification-code
+                                    "
+                                >
+                                    {{ $booking->booking_code }}
+                                </span>
+
+                                <div
+                                    class="
+                                        admin-notification-meta
+                                    "
+                                >
+                                    {{ $booking->guest_name }}
+
+                                    · Kamar
+                                    {{ $booking
+                                        ->room
+                                        ?->room_number
+                                        ?? '-' }}
+
+                                    <br>
+
+                                    Checkout:
+                                    {{ $booking
+                                        ->check_out
+                                        ->format('d/m/Y') }}
+                                </div>
+
+                            </a>
+
+                        @endforeach
+
+                    @endif
+
+
+                    {{-- ================================= --}}
+                    {{-- INVENTORY                         --}}
+                    {{-- ================================= --}}
+
+                    @if (
+                        ($adminLowStockCount ?? 0)
+                        > 0
+                    )
+
+                        <div class="admin-notification-section">
+                            Inventory
+                        </div>
+
+                        @foreach (
+                            $adminLowStockItems
+                            as $item
+                        )
+
+                            <a
+                                class="
+                                    admin-notification-item
+                                    inventory
+                                "
+                                href="{{ route(
+                                    'admin.inventory.movements',
+                                    $item,
+                                    false
+                                ) }}"
+                            >
+
+                                <span
+                                    class="
+                                        admin-notification-status
+                                    "
+                                >
+                                    ⚠ Stok Rendah
+                                </span>
+
+                                <span
+                                    class="
+                                        admin-notification-code
+                                    "
+                                >
+                                    {{ $item->name }}
+                                </span>
+
+                                <div
+                                    class="
+                                        admin-notification-meta
+                                    "
+                                >
+                                    {{ $item->area_label }}
+
+                                    @if ($item->location)
+                                        ·
+                                        {{ $item->location }}
+                                    @endif
+
+                                    <br>
+
+                                    Stok:
+                                    <strong>
+                                        {{ number_format(
+                                            $item->current_stock,
+                                            3,
+                                            ',',
+                                            '.'
+                                        ) }}
+                                        {{ $item->unit }}
+                                    </strong>
+
+                                    · Minimum:
+                                    {{ number_format(
+                                        $item->minimum_stock,
+                                        3,
+                                        ',',
+                                        '.'
+                                    ) }}
+                                    {{ $item->unit }}
+                                </div>
+
+                            </a>
+
+                        @endforeach
+
+                    @endif
+
+
+                    {{-- ================================= --}}
+                    {{-- FACILITY ATTENTION                --}}
+                    {{-- ================================= --}}
+
+                    @if (
+                        ($adminFacilityAttentionCount ?? 0)
+                        > 0
+                    )
+
+                        <div class="admin-notification-section">
+                            Facilities
+                        </div>
+
+                        @foreach (
+                            $adminFacilityAttentionItems
+                            as $asset
+                        )
+
+                            <a
+                                class="
+                                    admin-notification-item
+                                    facility
+                                "
+                                href="{{ route(
+                                    'admin.facilities.histories',
+                                    $asset,
+                                    false
+                                ) }}"
+                            >
+
+                                <span
+                                    class="
+                                        admin-notification-status
+                                    "
+                                >
+                                    🔧
+                                    {{ $asset->condition_label }}
+                                </span>
+
+                                <span
+                                    class="
+                                        admin-notification-code
+                                    "
+                                >
+                                    {{ $asset->name }}
+                                </span>
+
+                                <div
+                                    class="
+                                        admin-notification-meta
+                                    "
+                                >
+                                    {{ $asset->asset_code }}
+
+                                    <br>
+
+                                    {{ $asset->area_label }}
+
+                                    @if ($asset->location)
+                                        ·
+                                        {{ $asset->location }}
+                                    @endif
+                                </div>
+
+                            </a>
+
+                        @endforeach
+
+                    @endif
+
+
+                    {{-- ================================= --}}
+                    {{-- MAINTENANCE                       --}}
+                    {{-- ================================= --}}
+
+                    @if (
+                        ($adminMaintenanceDueCount ?? 0)
+                        > 0
+                    )
+
+                        <div class="admin-notification-section">
+                            Maintenance
+                        </div>
+
+                        @foreach (
+                            $adminMaintenanceDueItems
+                            as $asset
+                        )
+
+                            @php
+                                $maintenanceOverdue =
+                                    $asset
+                                        ->next_maintenance_at
+                                        ->lt(today());
+                            @endphp
+
+                            <a
+                                class="
+                                    admin-notification-item
+                                    maintenance
+                                "
+                                href="{{ route(
+                                    'admin.facilities.histories',
+                                    $asset,
+                                    false
+                                ) }}"
+                            >
+
+                                <span
+                                    class="
+                                        admin-notification-status
+                                    "
+                                >
+                                    📅
+                                    {{ $maintenanceOverdue
+                                        ? 'Maintenance Terlambat'
+                                        : 'Maintenance Hari Ini' }}
+                                </span>
+
+                                <span
+                                    class="
+                                        admin-notification-code
+                                    "
+                                >
+                                    {{ $asset->name }}
+                                </span>
+
+                                <div
+                                    class="
+                                        admin-notification-meta
+                                    "
+                                >
+                                    {{ $asset->area_label }}
+
+                                    @if ($asset->location)
+                                        ·
+                                        {{ $asset->location }}
+                                    @endif
+
+                                    <br>
+
+                                    Jadwal:
+                                    {{ $asset
+                                        ->next_maintenance_at
+                                        ->format('d/m/Y') }}
+                                </div>
+
+                            </a>
+
+                        @endforeach
+
+                    @endif
+
 
                     <a
-                        class="
-                            admin-notification-item
-                            {{ $isOverdue
-                                ? 'overdue'
-                                : 'today' }}
-                        "
+                        class="admin-notification-footer"
                         href="{{ route(
-                            'admin.bookings.index',
-                            [
-                                'search' =>
-                                    $notification->booking_code,
-                            ],
+                            'admin.dashboard',
+                            [],
                             false
                         ) }}"
                     >
-
-                        <span class="admin-notification-status">
-
-                            @if ($isOverdue)
-                                🔴 Terlambat Checkout
-                            @else
-                                🟠 Checkout Hari Ini
-                            @endif
-
-                        </span>
-
-
-                        <span class="admin-notification-code">
-                            {{ $notification->booking_code }}
-                        </span>
-
-
-                        <div class="admin-notification-meta">
-
-                            Tamu:
-                            {{ $notification->guest_name }}
-
-                            <br>
-
-                            Kamar:
-                            {{ $notification
-                                ->room
-                                ?->room_number ?? '-' }}
-
-                            @if ($notification->room?->name)
-                                -
-                                {{ $notification->room->name }}
-                            @endif
-
-                            <br>
-
-                            Checkout:
-                            {{ $notification
-                                ->check_out
-                                ->format('d/m/Y') }}
-
-                        </div>
-
+                        Lihat Dashboard Operasional
                     </a>
 
-                @empty
+                @else
 
                     <div class="admin-notification-empty">
-                        ✓ Tidak ada checkout hari ini
-                        atau checkout yang terlambat.
+                        ✓ Tidak ada notifikasi operasional
+                        yang membutuhkan perhatian.
                     </div>
 
-                @endforelse
-
-
-                <a
-                    class="admin-notification-footer"
-                    href="{{ route(
-                        'admin.bookings.index',
-                        [
-                            'status' => 'checked_in',
-                        ],
-                        false
-                    ) }}"
-                >
-                    Lihat Semua Check In Aktif
-                </a>
+                @endif
 
             </div>
 

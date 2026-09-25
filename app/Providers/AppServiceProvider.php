@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Models\Booking;
+use App\Models\InventoryItem;
+use App\Models\FacilityAsset;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -33,6 +35,7 @@ class AppServiceProvider extends ServiceProvider
                 'admin.orders.*',
                 'admin.statements.index',
                 'admin.inventory.*',
+                'admin.facilities.*',
             ],
             function ($view) {
                 $adminCheckoutNotifications = Booking::with([
@@ -50,6 +53,61 @@ class AppServiceProvider extends ServiceProvider
                     ->orderBy('check_out')
                     ->get();
 
+                $adminLowStockCount =
+                    InventoryItem::query()
+                        ->where('is_active', true)
+                        ->lowStock()
+                        ->count();
+
+                $adminLowStockItems =
+                    InventoryItem::query()
+                        ->where('is_active', true)
+                        ->lowStock()
+                        ->orderBy('current_stock')
+                        ->take(5)
+                        ->get();
+
+
+                $adminFacilityAttentionCount =
+                    FacilityAsset::query()
+                        ->where('is_active', true)
+                        ->needsAttention()
+                        ->count();
+
+                $adminFacilityAttentionItems =
+                    FacilityAsset::query()
+                        ->where('is_active', true)
+                        ->needsAttention()
+                        ->orderBy('name')
+                        ->take(5)
+                        ->get();
+
+
+                $adminMaintenanceDueCount =
+                    FacilityAsset::query()
+                        ->where('is_active', true)
+                        ->maintenanceDue()
+                        ->count();
+
+                $adminMaintenanceDueItems =
+                    FacilityAsset::query()
+                        ->where('is_active', true)
+                        ->maintenanceDue()
+                        ->orderBy('next_maintenance_at')
+                        ->take(5)
+                        ->get();
+
+
+                $adminCheckoutNotificationCount =
+                    $adminCheckoutNotifications->count();
+
+                $adminOperationalNotificationCount =
+                    $adminCheckoutNotificationCount
+                    + $adminLowStockCount
+                    + $adminFacilityAttentionCount
+                    + $adminMaintenanceDueCount;
+
+
                 $view->with(
                     'adminCheckoutNotifications',
                     $adminCheckoutNotifications
@@ -57,7 +115,42 @@ class AppServiceProvider extends ServiceProvider
 
                 $view->with(
                     'adminCheckoutNotificationCount',
-                    $adminCheckoutNotifications->count()
+                    $adminCheckoutNotificationCount
+                );
+
+                $view->with(
+                    'adminLowStockItems',
+                    $adminLowStockItems
+                );
+
+                $view->with(
+                    'adminLowStockCount',
+                    $adminLowStockCount
+                );
+
+                $view->with(
+                    'adminFacilityAttentionItems',
+                    $adminFacilityAttentionItems
+                );
+
+                $view->with(
+                    'adminFacilityAttentionCount',
+                    $adminFacilityAttentionCount
+                );
+
+                $view->with(
+                    'adminMaintenanceDueItems',
+                    $adminMaintenanceDueItems
+                );
+
+                $view->with(
+                    'adminMaintenanceDueCount',
+                    $adminMaintenanceDueCount
+                );
+
+                $view->with(
+                    'adminOperationalNotificationCount',
+                    $adminOperationalNotificationCount
                 );
             }
         );
